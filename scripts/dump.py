@@ -10,19 +10,25 @@ in both accounts.
 
     python scripts/dump.py
     python scripts/dump.py --raw some/dir --out other/dir
+
+Each run also writes changes.md (what changed since the previous dump, from _state.json)
+and deletes .md files in the output folder that this run did not produce.
 """
 
 import argparse
-import csv
-import io
+import hashlib
 import json
 import re
 import sys
+from datetime import datetime
 from collections import Counter, defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from app.ids import build as build_ids, deadline_key  # noqa: E402
+from app.world import assemble, csv_rows, looks_like_csv  # noqa: E402
 from common import DUMP_DIR, RAW_DIR, load_json  # noqa: E402
 
 LONG_TEXT = 160  # cells longer than this switch a table to one block per record
@@ -33,17 +39,6 @@ KIND_ORDER = [
     "profile", "deal_history", "contract", "invoices", "calls_index", "call", "email", "mail_log",
     "tickets", "requests", "internal_notes", "users", "devices", "usage", "flights", "device_events",
 ]
-
-# Row ids inside structured paperwork: kind -> (list key, id field, index kind)
-ROW_IDS = {
-    "tickets": ("tickets", "id", "ticket"),
-    "invoices": ("invoices", "number", "invoice"),
-    "devices": ("docks", "dock_id", "dock"),
-    "users": ("users", "user_id", "user"),
-    "mail_log": ("mail", "thread", "mail_thread"),
-}
-CSV_ROW_IDS = {"requests": ("request_id", "request")}  # CSV kind -> (id column, index kind)
-
 
 # ---------- generic rendering ----------
 
@@ -135,109 +130,6 @@ def render_any(obj, level=3):
         if not simple_value(v):
             out += heading(level, k) + render_any(v, level + 1)
     return out
-
-
-# ---------- id index ----------
-
-class Index:
-    """Every citable id, keyed "<scope>/<id>" (see CLAUDE.md "Ids and citations").
-
-    scope is the account for account data, or the source for shared data ("team",
-    "feature_requests").
-    """
-
-    def __init__(self):
-        self.entries = {}  # key -> {key, id, kind, scope, label, file, where}
-        self.collisions = []  # (key, kind kept, other kind, where)
-
-    def add(self, ident, kind, scope, label, file, where):
-        key = f"{scope}/{ident}"
-        if key in self.entries:
-            if self.entries[key]["kind"] != kind:
-                self.collisions.append((key, self.entries[key]["kind"], kind, f"{file} {where}"))
-            return
-        self.entries[key] = {
-            "key": key, "id": str(ident), "kind": kind, "scope": scope,
-            "label": (label or "")[:90], "file": file, "where": where,
-        }
-
-    def get(self, scope, ident):
-        return self.entries.get(f"{scope}/{ident}")
-
-    def label(self, scope, ident):
-        e = self.get(scope, ident)
-        return f"`{scope}/{ident}` ({e['kind']}: {e['label']})" if e else f"`{scope}/{ident}` (**not found**)"
-
-
-def deadline_key(opp_id):
-    return f"{opp_id}#deadline"
-
-
-def csv_rows(text):
-    return list(csv.DictReader(io.StringIO(text)))
-
-
-def build_index(raw, accounts, files, paperwork):
-    idx = Index()
-    src = "get_my_accounts"
-    for i, a in enumerate(accounts):
-        A = a["id"]
-        idx.add(A, "account", A, a.get("name"), src, f"accounts[{i}]")
-        for j, s in enumerate(a.get("stakeholders", [])):
-            idx.add(s["id"], "stakeholder", A, f"{s['name']}, {s['role']}", src, f"accounts[{i}].stakeholders[{j}]")
-        for j, f in enumerate(a.get("facts", [])):
-            idx.add(f["id"], "fact", A, f"[{f['status']}] {f['text']}", src, f"accounts[{i}].facts[{j}]")
-        for j, o in enumerate(a.get("opportunities", [])):
-            idx.add(o["id"], "opportunity", A, f"[{o['stage']}] {o['title']}", src, f"accounts[{i}].opportunities[{j}]")
-            if o.get("deadline"):
-                idx.add(deadline_key(o["id"]), "deadline", A, o["deadline"].get("text"), src, f"accounts[{i}].opportunities[{j}].deadline")
-        for j, o in enumerate(a.get("offers", [])):
-            idx.add(o["id"], "offer", A, f"[{o['status']}] {o['title']}", src, f"accounts[{i}].offers[{j}]")
-    for j, f in enumerate(files):
-        idx.add(f["id"], "file", f.get("account"), f"{f['title']} ({f['path']})", src, f"files[{j}]")
-
-    # JSON rows (tickets, ...) before CSV rows, so a ticket is the primary entry for an id
-    # that requests.csv also lists.
-    for csv_pass in (False, True):
-        for A, (name, payload) in paperwork.items():
-            for j, r in enumerate(payload.get("records", [])):
-                pid = f"{A}/{r['path']}"
-                if not csv_pass:
-                    idx.add(r["path"], f"paperwork:{r['kind']}", A, r["path"], name, f"records[{j}]")
-                add_row_ids(idx, A, pid, r, name, f"records[{j}]", csv_pass)
-
-    for j, s in enumerate((raw.get("get_signals") or {}).get("signals", [])):
-        A = s.get("account")
-        idx.add(s["id"], "signal", A, f"{s.get('dated', '')} {s.get('title', '')}", "get_signals", f"signals[{j}]")
-        for k, r in enumerate(s.get("records", [])):
-            # Signal records already carry the account prefix, e.g. "A/emails/...".
-            path = r["path"][len(A) + 1:] if r["path"].startswith(f"{A}/") else r["path"]
-            idx.add(path, f"paperwork:{r['kind']}", A, f"{path} (via signal {s['id']})", "get_signals", f"signals[{j}].records[{k}]")
-            add_row_ids(idx, A, r["path"], r, "get_signals", f"signals[{j}].records[{k}]", False)
-            add_row_ids(idx, A, r["path"], r, "get_signals", f"signals[{j}].records[{k}]", True)
-
-    for j, p in enumerate((raw.get("get_flytbase_team") or {}).get("people", [])):
-        idx.add(p["id"], "team_member", "team", f"{p['name']}, {p['role']}", "get_flytbase_team", f"people[{j}]")
-    for j, fr in enumerate((raw.get("get_feature_requests") or {}).get("requests", [])):
-        idx.add(fr["id"], "feature_request", "feature_requests", f"[{fr.get('status')}] {fr.get('title')}", "get_feature_requests", f"requests[{j}]")
-    return idx
-
-
-def add_row_ids(idx, A, pid, rec, file, where, csv_pass):
-    """Index ids of rows inside a paperwork record (tickets, invoices, docks, users, ...)."""
-    kind = rec.get("kind")
-    data = rec.get("data")
-    if not csv_pass and kind in ROW_IDS and isinstance(data, dict):
-        list_key, id_field, row_kind = ROW_IDS[kind]
-        for k, row in enumerate(data.get(list_key, [])):
-            if row.get(id_field):
-                label = row.get("subject") or row.get("what") or row.get("role") or row.get("model") or ""
-                idx.add(row[id_field], row_kind, A, f"{label} (in {pid})", file, f"{where}.data.{list_key}[{k}]")
-    if csv_pass and kind in CSV_ROW_IDS and isinstance(rec.get("text"), str):
-        col, row_kind = CSV_ROW_IDS[kind]
-        for k, row in enumerate(csv_rows(rec["text"])):
-            if row.get(col):
-                idx.add(row[col], row_kind, A, f"{row.get('summary', '')} (in {pid})", file, f"{where}.text row {k + 1}")
 
 
 # ---------- account sheets ----------
@@ -362,11 +254,6 @@ def record_date(rec):
     return m.group(1) if m else ""
 
 
-def looks_like_csv(text):
-    first = text.split("\n", 1)[0]
-    return "," in first and "\n" in text and len(first) < 300
-
-
 def csv_summary(text):
     """Describe a CSV: rows, date range, and counts for low-cardinality columns."""
     rows = csv_rows(text)
@@ -423,7 +310,7 @@ def main():
     raw_dir, out_dir = Path(args.raw), Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    raw = {p.stem: load_json(p) for p in sorted(raw_dir.glob("*.json"))}
+    raw = {p.stem: load_json(p) for p in sorted(raw_dir.glob("*.json")) if not p.stem.startswith("_")}
     if "get_my_accounts" not in raw:
         sys.exit(f"no get_my_accounts.json in {raw_dir}; run scripts/pull.py first")
     errors = sorted(p.name for p in raw_dir.glob("*.error.txt"))
@@ -434,15 +321,12 @@ def main():
         written.append(name)
 
     export = raw["get_my_accounts"]
-    accounts = export.get("accounts", [])
-    files = export.get("files", [])
-    paperwork = {
-        name[len("get_all_paperwork_"):]: (name, payload)
-        for name, payload in raw.items() if name.startswith("get_all_paperwork_")
-    }
-    file_contents = {name[len("get_file_"):]: payload for name, payload in raw.items() if name.startswith("get_file_")}
-    signals = (raw.get("get_signals") or {}).get("signals", [])
-    idx = build_index(raw, accounts, files, paperwork)
+    world = assemble(raw)
+    files = world["files"]
+    paperwork = {A: (f"get_all_paperwork_{A}", {"records": recs}) for A, recs in world["paperwork"].items()}
+    file_contents = {f["id"]: f["content"] for f in files if f["content"] is not None}
+    signals = world["signals"]
+    idx = build_ids(world)
 
     # schema.md
     if "get_data_format" in raw:
@@ -455,8 +339,17 @@ def main():
         lines += heading(2, "whoami") + render_any(raw["whoami"], 3)
     write("accounts_meta.md", lines)
 
-    # account_<id>.md
-    for a in accounts:
+    # account_<id>.md for every account the data knows about, with or without a sheet.
+    sheets = []
+    for a in world["accounts"]:
+        if not a["has_sheet"]:
+            drop = a.get("drop")
+            note = (f"_No account sheet yet. {a['id']} arrived as a new-account drop (whoami.new_accounts, path {drop.get('path')}); "
+                    f"run `python scripts/pull.py --refresh` to fetch it with get_new_account._" if isinstance(drop, dict)
+                    else f"_No account sheet: {a['id']} is in no export._")
+            a = {**a, "name": a.get("name") or "(no account sheet)", "official_story": note}
+        sheets.append(a)
+    for a in sheets:
         A = a["id"]
         pw = paperwork.get(A, (None, None))[1]
         write(f"account_{A}.md", render_account(a, files, pw, [s for s in signals if s.get("account") == A], file_contents, idx))
@@ -472,9 +365,50 @@ def main():
         if src in raw:
             write(out_name, [f"# {title} ({src})", ""] + render_any(raw[src], 2))
 
-    write("index.md", render_index(raw, accounts, files, paperwork, signals, file_contents, idx, errors))
+    write("index.md", render_index(raw, sheets, files, paperwork, signals, file_contents, idx, errors))
+
+    # changes.md: compare with the previous run, then save this run's state for next time.
+    state_path = out_dir / "_state.json"
+    previous = load_json(state_path) if state_path.exists() else None
+    state = {
+        "dumped_at": datetime.now().isoformat(timespec="seconds"),
+        "raw": {name: hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest() for name, payload in raw.items()},
+        "ids": {key: e["label"] for key, e in idx.entries.items()},
+    }
+    write("changes.md", render_changes(previous, state))
+    state_path.write_text(json.dumps(state, indent=1, ensure_ascii=False), encoding="utf-8")
+
+    # Remove stale outputs (e.g. an account that no longer exists).
+    for old in out_dir.glob("*.md"):
+        if old.name not in written:
+            old.unlink()
+            print(f"removed stale {old.name}")
+
     print(f"wrote {len(written)} file(s) to {out_dir}: {', '.join(written)}")
     print(f"{len(idx.entries)} ids indexed, {len(idx.collisions)} collision(s), {len(errors)} error file(s)")
+
+
+def render_changes(previous, state):
+    lines = ["# Changes since the previous dump", ""]
+    if previous is None:
+        return lines + ["_First dump with change tracking; nothing to compare yet._", ""]
+    lines += [f"Previous dump: {previous['dumped_at']}. This dump: {state['dumped_at']}.", ""]
+
+    old_raw, new_raw = previous.get("raw", {}), state["raw"]
+    raw_rows = [{"source": n, "change": "new"} for n in sorted(set(new_raw) - set(old_raw))]
+    raw_rows += [{"source": n, "change": "removed"} for n in sorted(set(old_raw) - set(new_raw))]
+    raw_rows += [{"source": n, "change": "changed"} for n in sorted(set(new_raw) & set(old_raw)) if new_raw[n] != old_raw[n]]
+    lines += heading(2, f"Raw sources ({len(raw_rows)} changed)") + (table(raw_rows, ["source", "change"]) if raw_rows else ["_(none)_", ""])
+
+    old_ids, new_ids = previous.get("ids", {}), state["ids"]
+    added = sorted(set(new_ids) - set(old_ids))
+    removed = sorted(set(old_ids) - set(new_ids))
+    relabelled = sorted(k for k in set(new_ids) & set(old_ids) if new_ids[k] != old_ids[k])
+    lines += heading(2, f"Ids added ({len(added)})") + ([f"- `{k}`: {new_ids[k]}" for k in added] or ["_(none)_"]) + [""]
+    lines += heading(2, f"Ids removed ({len(removed)})") + ([f"- `{k}`: {old_ids[k]}" for k in removed] or ["_(none)_"]) + [""]
+    lines += heading(2, f"Ids whose status, stage or label changed ({len(relabelled)})")
+    lines += [f"- `{k}`: {old_ids[k]} -> {new_ids[k]}" for k in relabelled] or ["_(none)_"]
+    return lines + [""]
 
 
 def render_index(raw, accounts, files, paperwork, signals, file_contents, idx, errors):

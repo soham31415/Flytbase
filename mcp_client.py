@@ -89,27 +89,22 @@ def _content_text(result):
     return ""
 
 
-def call_tool_raw(name, args=None):
-    """Call one MCP tool. Returns (payload, raw_http_body). Raises McpError."""
+def _rpc(method, params):
+    """POST one JSON-RPC request. Returns (result, raw_http_body). Raises McpError."""
     headers = {
         "content-type": "application/json",
         "accept": "application/json, text/event-stream",
         "authorization": f"Bearer {_token()}",
     }
-    body = {
-        "jsonrpc": "2.0",
-        "id": next(_request_ids),
-        "method": "tools/call",
-        "params": {"name": name, "arguments": args or {}},
-    }
+    body = {"jsonrpc": "2.0", "id": next(_request_ids), "method": method, "params": params}
     try:
         resp = httpx.post(MCP_URL, headers=headers, json=body, timeout=TIMEOUT_S)
     except httpx.HTTPError as e:
         raise McpError(redact(f"{type(e).__name__}: {e}")) from None
 
-    raw = redact(resp.text)
+    raw = redact(resp.text)  # what we store or print; parse the original
     try:
-        msg = parse_body(raw)
+        msg = parse_body(resp.text)
     except (McpError, json.JSONDecodeError):
         if resp.status_code >= 400:
             raise McpError(f"HTTP {resp.status_code}: {raw[:500]}", raw, resp.status_code) from None
@@ -121,17 +116,28 @@ def call_tool_raw(name, args=None):
         raise McpError(text, raw, resp.status_code)
 
     result = msg.get("result") or {}
-    text = _content_text(result)
     if result.get("isError"):
-        raise McpError(text or "tool returned isError", raw, resp.status_code)
+        raise McpError(_content_text(result) or "tool returned isError", raw, resp.status_code)
     if resp.status_code >= 400:
-        raise McpError(f"HTTP {resp.status_code}: {text or raw[:500]}", raw, resp.status_code)
+        raise McpError(f"HTTP {resp.status_code}: {_content_text(result) or raw[:500]}", raw, resp.status_code)
+    return result, raw
 
+
+def call_tool_raw(name, args=None):
+    """Call one MCP tool. Returns (payload, raw_http_body). Raises McpError."""
+    result, raw = _rpc("tools/call", {"name": name, "arguments": args or {}})
+    text = _content_text(result)
     try:
         payload = json.loads(text)
     except json.JSONDecodeError:
         payload = text  # some tools may answer in plain text
     return payload, raw
+
+
+def list_tools_raw():
+    """List the server's tools (JSON-RPC tools/list). Returns (tools, raw_http_body). Counts as a call."""
+    result, raw = _rpc("tools/list", {})
+    return result.get("tools", []), raw
 
 
 def call_tool(name, args=None):

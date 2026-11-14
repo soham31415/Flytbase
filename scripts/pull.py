@@ -8,6 +8,14 @@ Resumable: files already in data/raw/ are skipped unless --force <name>.
     python scripts/pull.py --only get_all_paperwork_A
     python scripts/pull.py --force get_signals --only get_signals
     python scripts/pull.py --accounts A,B          # override account ids
+    python scripts/pull.py --refresh               # re-check the server, pull only what changed
+    python scripts/pull.py --list-tools            # 1 call: list the server's tools, flag new ones
+    python scripts/pull.py --search brief --account K   # 1 call: search_paperwork
+
+--refresh always calls whoami, get_my_accounts and get_signals (about 3 min), then follows up
+on whatever changed: a new or newly opened account, a new file, a new signal. A changed payload
+replaces data/raw/<name>.json and the previous copy moves to data/raw/_history/<name>/.
+Don't run this while the live app runs: they share the token's 1 call/min budget.
 """
 
 import argparse
@@ -24,11 +32,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dotenv import load_dotenv  # noqa: E402
 
 import mcp_client  # noqa: E402
+from app.sync_plan import (  # noqa: E402
+    REFRESH_HEAD, drop_id, file_step, followups, new_account_files, new_account_step, paperwork_step, payload_hash,
+)
 from common import DEFAULT_ACCOUNTS, RAW_DIR, ROOT, find_accounts, load_json  # noqa: E402
 
 GAP_S = 65  # seconds between calls
 RATE_LIMIT_WAIT_S = 70  # wait before the single retry after a rate-limit error
 HTTP_DIR = RAW_DIR / "_http"
+HISTORY_DIR = RAW_DIR / "_history"  # previous copies of payloads that changed
 LAST_CALL_FILE = RAW_DIR / "_last_call_at.txt"  # so a quick re-run still respects the gap
 
 # (file name, tool, args) before and after the per-account paperwork calls.
@@ -137,11 +149,102 @@ def pull_one(throttle, name, tool, args):
         log(f"{name:<22} ERROR  {size:>8} B  {str(err)[:150]}")
         return False
 
-    json_path(name).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    status = save_payload(name, payload)
     if error_path(name).exists():
         error_path(name).unlink()
-    log(f"{name:<22} ok     {size:>8} B  keys: {top_level_keys(payload)}")
+    log(f"{name:<22} ok     {size:>8} B  {status:<9} keys: {top_level_keys(payload)}")
     return True
+
+
+def save_payload(name, payload):
+    """Write data/raw/<name>.json. If it changed, keep the old copy in _history. Returns new|changed|unchanged."""
+    path = json_path(name)
+    status = "new"
+    if path.exists():
+        old = load_json(path)
+        if payload_hash(old) == payload_hash(payload):
+            return "unchanged"
+        stamp = datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y%m%dT%H%M%S")
+        archive = HISTORY_DIR / name / f"{stamp}.json"
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        path.replace(archive)
+        status = "changed"
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    return status
+
+
+def refresh(throttle):
+    """Re-check the server and pull only what changed. Returns the list of failed sources."""
+    queue = list(REFRESH_HEAD)
+    done, failed, changes = set(), [], []
+    log(f"refresh: at least {len(queue)} calls (about {(len(queue) - 1) * GAP_S / 60:.1f} min), more if something changed")
+
+    while queue:
+        name, tool, tool_args = queue.pop(0)
+        if name in done:
+            continue
+        done.add(name)
+        old = load_json(json_path(name)) if json_path(name).exists() else None
+        if not pull_one(throttle, name, tool, tool_args):
+            failed.append(name)
+            continue
+        steps, notes = followups(name, old, load_json(json_path(name)))
+        for note in notes:
+            log(f"  change: {note}")
+        changes += notes
+        if name in ("get_my_accounts", "get_signals") or name.startswith("get_new_account_"):
+            steps += missing_steps()  # also anything listed but never pulled
+        queue += [st for st in steps if st[0] not in done and st not in queue]
+
+    log(f"refresh done: {len(changes)} change(s), {len(done)} call(s)" + (f", errors: {', '.join(failed)}" if failed else ""))
+    return failed
+
+
+# Tools documented in CLAUDE.md. --list-tools flags anything else the server offers.
+KNOWN_TOOLS = {
+    "whoami", "get_my_accounts", "get_file", "list_paperwork", "get_all_paperwork", "search_paperwork",
+    "get_paperwork_record", "get_feature_requests", "get_release_notes", "get_flytbase_team",
+    "get_signals", "get_data_format", "list_notes", "write_note",
+}
+
+
+def list_tools(throttle):
+    throttle.wait(GAP_S)
+    try:
+        tools, raw = mcp_client.list_tools_raw()
+    except mcp_client.McpError as e:
+        log(f"tools/list ERROR {e}")
+        return False
+    finally:
+        throttle.mark()
+    (RAW_DIR / "_mcp_tools.json").write_text(json.dumps(tools, indent=2, ensure_ascii=False), encoding="utf-8")
+    names = [t.get("name") for t in tools]
+    log(f"tools/list ok: {len(names)} tools -> data/raw/_mcp_tools.json")
+    for t in tools:
+        flag = "NEW " if t.get("name") not in KNOWN_TOOLS else "    "
+        params = ", ".join((t.get("inputSchema") or {}).get("properties", {}).keys())
+        log(f"  {flag}{t.get('name')}({params})")
+    missing = sorted(KNOWN_TOOLS - set(names))
+    if missing:
+        log(f"  documented but not offered: {', '.join(missing)}")
+    return True
+
+
+def missing_steps():
+    """Sources listed by what we hold (accounts, files, drop accounts and their files) but not on disk yet."""
+    steps = []
+    if json_path("get_my_accounts").exists():
+        export = load_json(json_path("get_my_accounts"))
+        steps += [paperwork_step(a["id"]) for a in export.get("accounts", []) if a.get("id")]
+        steps += [file_step(f["id"]) for f in export.get("files", []) if f.get("id")]
+    if json_path("whoami").exists():
+        for entry in load_json(json_path("whoami")).get("new_accounts") or []:
+            acct = drop_id(entry)
+            if acct:
+                steps += [new_account_step(acct), paperwork_step(acct)]
+                if json_path(f"get_new_account_{acct}").exists():
+                    steps += new_account_files(acct, load_json(json_path(f"get_new_account_{acct}")))
+    return [st for st in steps if not json_path(st[0]).exists()]
 
 
 def main():
@@ -149,7 +252,13 @@ def main():
     parser.add_argument("--only", action="append", default=[], metavar="NAME", help="pull only these sources (repeatable)")
     parser.add_argument("--force", action="append", default=[], metavar="NAME", help="re-pull even if the file exists (repeatable)")
     parser.add_argument("--accounts", help="comma-separated account ids, overrides get_my_accounts")
+    parser.add_argument("--refresh", action="store_true", help="re-check the server and pull only what changed")
+    parser.add_argument("--list-tools", action="store_true", help="list the server's tools (1 call)")
+    parser.add_argument("--search", metavar="QUERY", help="search_paperwork for QUERY (1 call); use with --account")
+    parser.add_argument("--account", help="account for --search")
     args = parser.parse_args()
+    if args.refresh and (args.only or args.force or args.accounts):
+        sys.exit("--refresh can't be combined with --only, --force or --accounts")
 
     load_dotenv(ROOT / ".env")
     if not os.environ.get("AQ_TOKEN", "").strip():
@@ -157,6 +266,23 @@ def main():
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     HTTP_DIR.mkdir(parents=True, exist_ok=True)
+
+    if args.list_tools or args.search:
+        throttle = Throttle()
+        ok = list_tools(throttle) if args.list_tools else True
+        if args.search:
+            slug = "".join(c if c.isalnum() else "_" for c in args.search.lower())[:40]
+            name = f"search_paperwork_{args.account or 'all'}_{slug}"
+            tool_args = {"q": args.search, **({"account": args.account} if args.account else {})}
+            ok = pull_one(throttle, name, "search_paperwork", tool_args) and ok
+        if not ok:
+            sys.exit(1)
+        return
+
+    if args.refresh:
+        failed = refresh(Throttle())
+        log("Next: python scripts/dump.py" if not failed else "Re-run --refresh to retry the errors.")
+        return
 
     if args.accounts:
         accounts, note = [a.strip() for a in args.accounts.split(",") if a.strip()], "from --accounts"
