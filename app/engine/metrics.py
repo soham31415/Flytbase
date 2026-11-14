@@ -507,6 +507,17 @@ def contact_metrics(world, pw, A, now, as_of, rules):
                 else:
                     unanswered.append({"_group": group, "ref": ref, "refs": [ref], "person": person, "from": sender,
                                        "date": day.isoformat(), "days_waiting": (now - day).days})
+    # An unattributed message on the same day as a person's own, from a sender named in that person's
+    # role (e.g. "Westmere drone unit" for the Westmere drone unit inspector), is the same message.
+    acct = next((a for a in world["accounts"] if a["id"] == A), {})
+    roles = {f"{A}/{s['id']}": (s.get("role") or "").lower() for s in acct.get("stakeholders", [])}
+    for u in [x for x in unanswered if not x["person"]]:
+        words = {w for w in re.findall(r"[a-z]{5,}", (u["from"] or "").lower())}
+        owner = next((x for x in unanswered if x["person"] and x["date"] == u["date"]
+                      and words & set(re.findall(r"[a-z]{5,}", roles.get(x["person"], "")))), None)
+        if owner:
+            owner["refs"] += u["refs"]
+            unanswered.remove(u)
     for u in unanswered:
         u.pop("_group")
 

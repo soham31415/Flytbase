@@ -8,15 +8,16 @@ from fastapi.templating import Jinja2Templates
 
 from app import crm
 from app.config import ROOT, get_settings
-from app.engine.run import evaluate, load_rules, resolve_metric
+from app.engine.run import full_state, load_rules, resolve_metric
 from app.store import Store
 
 
 def refresh_state(app, store, settings):
     """Rebuild the store's tables and re-run the engine. Called after every data change."""
-    world, _ = store.rebuild(settings.as_of)
+    world, idx = store.rebuild(settings.as_of)
+    as_of = store.meta().get("as_of")
     app.state.world = world
-    app.state.engine = evaluate(world, store.meta().get("as_of"))
+    app.state.engine = full_state(world, idx, as_of, store.anchors(world, as_of))
 
 
 @asynccontextmanager
@@ -162,3 +163,10 @@ def resolve_ref(ref: str, request: Request):
         if rec:
             return {"type": "record", **rec}
     raise HTTPException(status_code=404, detail=f"unknown reference: {ref}")
+
+
+@app.get("/api/state")
+def api_state(request: Request):
+    """The five answers for every account (cached; recomputed after every rebuild)."""
+    e = request.app.state.engine
+    return {"as_of": e["as_of"], "accounts": e["answers"], "dropped": e["dropped"]}

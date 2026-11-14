@@ -49,3 +49,26 @@ checks:
     satisfaction: {role_words: ["manager", "inspector"], team: "team/neel_sharma"}
     timeline: {role_words: ["lead", "head", "manager"], team: "team/neel_sharma"}
     problem: {role_words: ["it", "infrastructure", "data protection", "manager"], team: "team/pranjal_suyal"}
+
+answers:
+  stage_weight: {identified: 0.1, qualified: 0.3, cleared: 0.6, agreed: 0.9}
+  unbacked_factor: 0.5              # unbacked worth counts half when scoring a move
+  identified_worth: 50000           # placeholder worth for a deal with no worth yet
+  # urgency multiplier by days until the move's target date (first band that fits)
+  urgency: [{days: 0, x: 3.0}, {days: 7, x: 3.0}, {days: 21, x: 2.0}, {days: 45, x: 1.5}, {days: 90, x: 1.0}, {days: 100000, x: 0.7}]
+  unknown_date_urgency: 0.8
+  risk_defused: {red: 50000, amber: 20000}
+  unblock_bonus: 40000              # FlytBase owns the blocker: we can move it without the customer
+  renewal_red_days: 60              # a renewal with no order turns red this many days before term end
+  renewal_amber_days: 120
+  max_moves_per_kind: 1            # in the top 3, at most this many moves of one kind (e.g. replies)
+  move_default_days: 7              # a move is due within this many days unless a deadline is sooner
+  contradiction_worth: 100000       # a contradicted claim on a deal this big is a red risk
+  owners:
+    reply: me
+    unblock: team/pranjal_suyal
+    knowledge: team/pranjal_suyal
+    usage: team/support_desk
+    settle: me
+    successor: team/achal_negi
+    deadline: me

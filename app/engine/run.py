@@ -9,7 +9,7 @@ from pathlib import Path
 import yaml
 
 from app.config import ROOT
-from app.engine import checks, claims as claims_mod, metrics as metrics_mod
+from app.engine import answers as answers_mod, checks, claims as claims_mod, metrics as metrics_mod, validate
 from app.world import csv_rows
 
 RULES_PATH = ROOT / "config" / "rules.yaml"
@@ -62,3 +62,14 @@ def resolve_metric(engine, world, account, name, lookup):
             rec = lookup(ref)
             rows.append({"ref": ref, "row": rec["record"] if rec else None, "source": (rec.get("source") or rec.get("file")) if rec else None})
     return {**m, "rows": rows}
+
+
+def full_state(world, idx, as_of, anchors, rules=None, analysis_dir=ANALYSIS_DIR):
+    """Engine output plus the five answers per account, validated (items citing unknown ids are dropped)."""
+    rules = rules or load_rules()
+    engine = evaluate(world, as_of, rules, analysis_dir)
+    roles = answers_mod.load_roles(analysis_dir)
+    answers = answers_mod.compute(world, engine, as_of, rules, roles, anchors)
+    engine["answers"] = answers
+    engine["dropped"] = validate.check(answers, idx, engine)
+    return engine

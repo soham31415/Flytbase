@@ -238,6 +238,22 @@ class Store:
         for n in world["notes"]:
             ex("INSERT INTO notes (payload) VALUES (?)", (_json(n),))
 
+    def anchors(self, world, as_of):
+        """In-game date each drop account's sheet first appeared: its deadline minutes count from there.
+
+        Stored once in meta, so later signals moving today forward don't move those deadlines.
+        """
+        out = {}
+        with self.lock, self.conn:
+            for a in world["accounts"]:
+                if (a.get("sheet_source") or "").startswith("get_new_account_"):
+                    key = f"anchor:{a['id']}"
+                    row = self.conn.execute("SELECT v FROM meta WHERE k = ?", (key,)).fetchone()
+                    if row is None and as_of:
+                        self.conn.execute("INSERT INTO meta VALUES (?, ?)", (key, as_of))
+                    out[a["id"]] = row["v"] if row else as_of
+        return out
+
     # ---------- reads ----------
 
     def record(self, key):
