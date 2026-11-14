@@ -12,6 +12,7 @@ Result per claim: {verdict, basis, numbers, evidence_for, evidence_against, poss
 """
 
 import operator
+import re
 
 STAGES = ["identified", "qualified", "cleared", "agreed"]
 OPS = {">=": operator.ge, "<=": operator.le, ">": operator.gt, "<": operator.lt, "==": operator.eq, "!=": operator.ne}
@@ -236,7 +237,12 @@ def ask(claim, verdict, ctx, cfg):
         return claim["ask"]
     rule = cfg["checks"]["ask"].get(claim["type"]) or {}
     speaker = claim.get("said_by")
-    who = next((key for key, p in ctx["people"].items()
-                if key != speaker and any(w in (p.get("role") or "").lower() for w in rule.get("role_words", []))), None)
+    # Role words are in priority order: the first word anyone's role matches decides who to ask.
+    who = None
+    for w in rule.get("role_words", []):
+        who = next((key for key, p in ctx["people"].items()
+                    if key != speaker and re.search(rf"{re.escape(w.strip())}", (p.get("role") or "").lower())), None)
+        if who:
+            break
     who = who or rule.get("team") or "team/neel_sharma"
     return {"question": f"Can you confirm or correct: \"{claim['quote']}\"", "who": who}

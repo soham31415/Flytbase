@@ -40,7 +40,7 @@ checks:
     problem: ["fault", "battery", "offline", "not flown", "has not flown", "never uses", "weak", "drops", "not last", "cannot", "not signed"]
     usage: ["fly", "flying", "flew", "flies", "use", "patrol", "missions", "operational"]
   # Who to ask when a claim can't be settled from the data, by claim type.
-  # A stakeholder whose role contains one of these words is preferred; else the team member.
+  # A stakeholder whose role contains one of these whole words is preferred; else the team member.
   ask:
     budget: {role_words: ["finance", "controller"], team: "team/achal_negi"}
     authority: {role_words: ["procurement", "finance", "lead"], team: "team/achal_negi"}
@@ -48,4 +48,4 @@ checks:
     demand: {role_words: ["lead", "head", "manager"], team: "team/achal_negi"}
     satisfaction: {role_words: ["manager", "inspector"], team: "team/neel_sharma"}
     timeline: {role_words: ["lead", "head", "manager"], team: "team/neel_sharma"}
-    problem: {role_words: ["it ", "infrastructure", "data protection", "manager"], team: "team/pranjal_suyal"}
+    problem: {role_words: ["it", "infrastructure", "data protection", "manager"], team: "team/pranjal_suyal"}

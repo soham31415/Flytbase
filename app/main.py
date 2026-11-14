@@ -2,12 +2,13 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app import crm
 from app.config import ROOT, get_settings
-from app.engine.run import evaluate, resolve_metric
+from app.engine.run import evaluate, load_rules, resolve_metric
 from app.store import Store
 
 
@@ -39,7 +40,14 @@ def store(request: Request) -> Store:
 
 @app.get("/")
 def index(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"status": "syncing"})
+    # Version static URLs by file time so a browser never runs stale JS/CSS after an update.
+    version = int(max(f.stat().st_mtime for f in (ROOT / "static").iterdir()))
+    return templates.TemplateResponse(request, "index.html", {"v": version})
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response(status_code=204)  # the page sets an inline icon; this stops the browser's default request 404ing
 
 
 @app.get("/api/health")
@@ -111,3 +119,46 @@ def metric_trace(account: str, name: str, request: Request):
     if m is None:
         raise HTTPException(status_code=404, detail=f"unknown metric: {account}/{name}")
     return m
+
+
+@app.get("/api/portfolio")
+def portfolio(request: Request):
+    """Every account at a glance, plus the signal feed."""
+    st = request.app.state
+    meta = store(request).meta()
+    return {**crm.portfolio(st.world, st.engine, st.engine["as_of"]), "last_sync": meta.get("last_sync"),
+            "rebuilt_at": meta.get("rebuilt_at"), "live_mode": get_settings().live_mode,
+            "thresholds": load_rules()["contact"]}
+
+
+@app.get("/api/account/{account}")
+def account(account: str, request: Request):
+    """One account: summary, people, deals, offers, deadlines, facts, metrics, claims, activity, evidence."""
+    st = request.app.state
+    detail = crm.account_detail(st.world, st.engine, account, st.engine["as_of"])
+    if detail is None:
+        raise HTTPException(status_code=404, detail=f"unknown account: {account}")
+    return detail
+
+
+@app.get("/api/ref/{ref:path}")
+def resolve_ref(ref: str, request: Request):
+    """Resolve any reference the UI shows: an id, a metric (`A/metric/<name>`), or a CSV row (`A/<path>#r<n>`)."""
+    st = request.app.state
+    if "/metric/" in ref:
+        account, name = ref.split("/metric/", 1)
+        m = resolve_metric(st.engine, st.world, account, name, store(request).record)
+        if m:
+            return {"type": "metric", "ref": ref, **m}
+    elif "#r" in ref:
+        account, rest = ref.split("/", 1)
+        path, n = rest.rsplit("#r", 1)
+        m = resolve_metric({"accounts": {account: {"metrics": [{"name": "_", "rows": [ref]}]}}}, st.world, account, "_", store(request).record)
+        row = m["rows"][0] if m else None
+        if row and row["row"] is not None:
+            return {"type": "row", "ref": ref, "file": f"{account}/{path}", "row_number": int(n), "row": row["row"], "source": row["source"]}
+    else:
+        rec = store(request).record(ref)
+        if rec:
+            return {"type": "record", **rec}
+    raise HTTPException(status_code=404, detail=f"unknown reference: {ref}")

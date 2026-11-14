@@ -31,5 +31,5 @@ def test_reload_refused_in_live_mode(monkeypatch, empty_client):
 def test_index_page(empty_client):
     r = empty_client.get("/")
     assert r.status_code == 200
-    assert "Questathon CRM: syncing" in r.text
+    assert "Questathon CRM" in r.text and "/static/app.js" in r.text
     assert empty_client.get("/static/app.js").status_code == 200

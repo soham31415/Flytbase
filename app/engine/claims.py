@@ -66,7 +66,7 @@ def build(world, account, rules, analysis_dir):
             "quantity": c.get("quantity"), "date": c.get("date"), "source_ids": c.get("source_ids") or [],
             "quote": c.get("quote"), "test": c.get("test") or [], "evidence_for": c.get("evidence_for") or [],
             "evidence_against": c.get("evidence_against") or [], "possible_causes": c.get("possible_causes") or [],
-            "ask": c.get("ask"), "note": c.get("note"),
+            "ask": c.get("ask"), "note": c.get("note"), "premise_of": c.get("premise_of") or [],
         }
         claims.append(claim)
         replaced.update(c.get("replaces") or [])
@@ -84,6 +84,7 @@ def build(world, account, rules, analysis_dir):
             "date": None, "minute": f.get("learned_at_minute"), "source_ids": sources, "quote": f.get("text"),
             "test": o.get("test") or [], "evidence_for": o.get("evidence_for") or [], "evidence_against": o.get("evidence_against") or [],
             "possible_causes": o.get("possible_causes") or [], "ask": o.get("ask"), "note": o.get("note"),
+            "premise_of": o.get("premise_of") or [],
         })
 
     pw = Paperwork(world, account)
