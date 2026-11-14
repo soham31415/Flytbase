@@ -191,3 +191,100 @@ def account_detail(world, engine, A, as_of):
         "evidence": evidence(world, acct),
         "signals": [s for s in world["signals"] if s.get("account") == A],
     }
+
+
+# ---------- CRM sections (built on the five answers) ----------
+
+def health(answers):
+    sev = {r["severity"] for r in answers["q4"]["risks"]}
+    return "red" if "red" in sev else "amber" if "amber" in sev else "green"
+
+
+def account_row(world, engine, acct, as_of):
+    A = acct["id"]
+    s = account_summary(world, engine, acct, as_of)
+    a = engine["answers"][A]
+    top = a["q3"]["moves"][0] if a["q3"]["moves"] else None
+    return {**{k: s[k] for k in ("id", "name", "sector", "currency", "annual_value", "term_end", "days_to_renewal", "has_sheet",
+                                 "docks", "utilisation_30d", "unanswered", "longest_wait_days")},
+            "health": health(a), "red_risks": sum(r["severity"] == "red" for r in a["q4"]["risks"]),
+            "open_deals": len(acct.get("opportunities", [])), "backed": a["q1"]["backed_total"], "unbacked": a["q1"]["unbacked_total"],
+            "next_move": top, "owner": "You"}
+
+
+def home(world, engine, as_of):
+    rows = [account_row(world, engine, a, as_of) for a in world["accounts"]]
+    # Each account's top move first (by score), then everyone's second moves, and so on.
+    moves = sorted(((m, a["id"]) for a in world["accounts"] for m in engine["answers"][a["id"]]["q3"]["moves"]),
+                   key=lambda x: (x[0]["rank"], -x[0]["score"]))
+    risks = sorted(((r, a["id"]) for a in world["accounts"] for r in engine["answers"][a["id"]]["q4"]["risks"] if r["severity"] == "red"),
+                   key=lambda x: x[0]["turns_bad_on"] or "9999")
+    by_cur = {}
+    for r in rows:
+        c = by_cur.setdefault(r["currency"] or "", {"backed": 0, "unbacked": 0, "in_force": 0})
+        c["backed"] += r["backed"]
+        c["unbacked"] += r["unbacked"]
+        c["in_force"] += r["annual_value"] or 0
+    names = {r["id"]: r["name"] for r in rows}
+    return {
+        "as_of": as_of, "accounts": rows, "totals": by_cur,
+        "renewals_120": sum(1 for r in rows if r["days_to_renewal"] is not None and r["days_to_renewal"] <= 120),
+        "waiting": sum(r["unanswered"] for r in rows),
+        "moves": [{**m, "account": A, "account_name": names[A]} for m, A in moves[:8]],
+        "risks": [{**r, "account": A, "account_name": names[A]} for r, A in risks[:8]],
+        "signals": sorted(world["signals"], key=lambda s: s.get("dated", ""), reverse=True)[:6],
+    }
+
+
+def deals_all(world, engine):
+    out = []
+    for acct in world["accounts"]:
+        A = acct["id"]
+        q1 = {x["deal_id"]: x for x in engine["answers"][A]["q1"]["deals"]}
+        q2 = {x["deal_id"]: x for x in engine["answers"][A]["q2"]["deals"]}
+        moves = engine["answers"][A]["q3"]["moves"] + engine["answers"][A]["q3"]["candidates"]
+        currency = Paperwork(world, A).data("profile.json").get("currency")
+        for o in acct.get("opportunities", []):
+            key = f"{A}/{o['id']}"
+            b = q1.get(key)
+            out.append({
+                "id": key, "account": A, "account_name": acct.get("name"), "currency": currency, "title": o.get("title"),
+                "stage": o.get("stage"), "worth": o.get("worth_up_to"),
+                "backing": None if not b else ("backed" if b["backed"] else "unbacked"), "backing_why": b["why"] if b else None,
+                "blocker": o.get("blocker"), "deadline": (o.get("deadline") or {}).get("text"),
+                "roles": (q2.get(key) or {}).get("roles", []),
+                "next_move": next((m for m in moves if m["deal_id"] == key), None),
+                "evidence": [f"{A}/{e}" for e in o.get("evidence", [])],
+            })
+    return out
+
+
+def contacts_all(world, engine, as_of):
+    out = []
+    for acct in world["accounts"]:
+        for p in people(world, engine, acct, as_of):
+            out.append({**{k: p[k] for k in ("ref", "name", "role", "relationship", "origin", "last_contact", "days_since_two_way", "note")},
+                        "account": acct["id"], "account_name": acct.get("name"),
+                        "waiting_days": max((u["days_waiting"] for u in p["waiting_on_us"]), default=None),
+                        "claims": len(p["claims"]), "contradicted": sum(c["verdict"] == "contradicted" for c in p["claims"])})
+    return out
+
+
+def activities_all(world, limit=300):
+    items = [{**x, "account": a["id"], "account_name": a.get("name")} for a in world["accounts"] for x in activity(world, a, limit)]
+    return sorted(items, key=lambda x: x["date"], reverse=True)[:limit]
+
+
+def account_page(world, engine, A, as_of):
+    acct = next((a for a in world["accounts"] if a["id"] == A), None)
+    if acct is None:
+        return None
+    return {
+        "account": account_row(world, engine, acct, as_of),
+        "official_story": acct.get("official_story"),
+        "answers": engine["answers"][A],
+        "deals": [d for d in deals_all(world, engine) if d["account"] == A],
+        "contacts": [c for c in contacts_all(world, engine, as_of) if c["account"] == A],
+        "activity": activity(world, acct, 200),
+        "signals": [s for s in world["signals"] if s.get("account") == A],
+    }

@@ -36,10 +36,17 @@ Locally, keep `LIVE_MODE=false` so the app works from the snapshots in `data/raw
 On startup the app adds any snapshot payloads its database doesn't hold yet (`data/crm.db`) and rebuilds.
 After a new pull, `POST /api/reload` does the same without a restart.
 
+The UI (http://localhost:8000) is a CRM: Home (next moves, risks, live updates), Accounts (each with the
+five answers: book, power, next steps, risks, open questions), a Deals pipeline, Contacts, Activities, and a
+separate Insights section (claims checked against the paperwork). Every item has a "sources" link to its records.
+Dark mode follows the system and can be toggled.
+
 API so far:
 - `GET /api/health`: in-game date, accounts, last sync, table counts, unresolved references.
 - `GET /api/record/{id}`: the full record behind any cited id, e.g. `/api/record/A/km_usage_1`. A deadline id contains `#`; send it as `%23` (`/api/record/B/b_idle%23deadline`).
 - `POST /api/reload` (snapshot mode only): re-read `data/raw/` and rebuild.
+- `GET /api/state`: the five answers for every account. Section endpoints: `/api/home`, `/api/accounts[/{id}]`,
+  `/api/deals`, `/api/contacts`, `/api/activities`, `/api/insights`; `/api/ref/{ref}` resolves any id, metric or row.
 In production run exactly one worker (`--workers 1`), because only one poller may exist.
 
 ## Environment variables

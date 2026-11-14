@@ -1,3 +1,6 @@
+from tests.conftest import needs_snapshots
+
+
 def test_health_without_snapshots(empty_client):
     r = empty_client.get("/api/health")
     assert r.status_code == 200
@@ -31,5 +34,12 @@ def test_reload_refused_in_live_mode(monkeypatch, empty_client):
 def test_index_page(empty_client):
     r = empty_client.get("/")
     assert r.status_code == 200
-    assert "Questathon CRM" in r.text and "/static/app.js" in r.text
+    assert "FlytBase CRM" in r.text and "/static/app.js" in r.text
     assert empty_client.get("/static/app.js").status_code == 200
+
+
+@needs_snapshots
+def test_crm_sections(client):
+    for path in ["/api/home", "/api/accounts", "/api/accounts/A", "/api/deals", "/api/contacts", "/api/activities", "/api/insights"]:
+        assert client.get(path).status_code == 200, path
+    assert client.get("/api/accounts/ZZ").status_code == 404

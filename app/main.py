@@ -170,3 +170,59 @@ def api_state(request: Request):
     """The five answers for every account (cached; recomputed after every rebuild)."""
     e = request.app.state.engine
     return {"as_of": e["as_of"], "accounts": e["answers"], "dropped": e["dropped"]}
+
+
+# ---------- CRM sections ----------
+
+def _st(request):
+    return request.app.state.world, request.app.state.engine, request.app.state.engine["as_of"]
+
+
+@app.get("/api/home")
+def api_home(request: Request):
+    world, engine, as_of = _st(request)
+    meta = store(request).meta()
+    return {**crm.home(world, engine, as_of), "last_sync": meta.get("last_sync"), "rebuilt_at": meta.get("rebuilt_at"),
+            "live_mode": get_settings().live_mode}
+
+
+@app.get("/api/accounts")
+def api_accounts(request: Request):
+    world, engine, as_of = _st(request)
+    return {"as_of": as_of, "accounts": [crm.account_row(world, engine, a, as_of) for a in world["accounts"]]}
+
+
+@app.get("/api/accounts/{account}")
+def api_account_page(account: str, request: Request):
+    world, engine, as_of = _st(request)
+    page = crm.account_page(world, engine, account, as_of)
+    if page is None:
+        raise HTTPException(status_code=404, detail=f"unknown account: {account}")
+    return page
+
+
+@app.get("/api/deals")
+def api_deals(request: Request):
+    world, engine, _ = _st(request)
+    return {"deals": crm.deals_all(world, engine)}
+
+
+@app.get("/api/contacts")
+def api_contacts(request: Request):
+    world, engine, as_of = _st(request)
+    return {"contacts": crm.contacts_all(world, engine, as_of)}
+
+
+@app.get("/api/activities")
+def api_activities(request: Request):
+    world, _, _ = _st(request)
+    return {"activities": crm.activities_all(world)}
+
+
+@app.get("/api/insights")
+def api_insights(request: Request):
+    """Claims vs evidence, all accounts: the separate Insights section."""
+    world, engine, as_of = _st(request)
+    names = {a["id"]: a.get("name") for a in world["accounts"]}
+    claims = [{**c, "account": A, "account_name": names[A]} for A, acct in engine["accounts"].items() for c in acct["claims"]]
+    return {"as_of": as_of, "claims": claims}
