@@ -1,3 +1,51 @@
-# Engine thresholds and weights (filled in at Step 3b from data/analysis/rules_draft.md):
-# stage weights, urgency curve, cold-contact days, deadline-risk window, etc.
-# Tune here; no code changes needed.
+# Engine thresholds and weights. Tune here; no code changes needed.
+# Decisions behind these values: CLAUDE.md "Engine decisions".
+
+metrics:
+  windows_days: [7, 30, 90]       # "flew in the last N days", counted on whole usage weeks
+  regular_patrol_per_week: 2      # a dock "patrols regularly" at >= this many flights a week ...
+  regular_patrol_weeks: 8         # ... averaged over this many most recent weeks
+  trend_weeks: 4                  # trend = last N weeks of flights vs the N weeks before
+  stopped_weeks: 2                # "stopped flying" = regular before, zero flights in the last N weeks
+  stale_usage_days: 14            # usage data older than this (vs in-game today) is flagged stale
+  invoice_due_days: 30            # an unpaid invoice older than this is overdue
+  problem_events:                 # device events that count as a problem on a dock
+    - battery_health_warning
+    - connection_lost
+    - offline
+    - lid_sensor_fault
+    - fault
+
+contact:
+  waiting_on_us_days: {amber: 7, red: 14}   # a customer message with no reply from us
+  cold_contact_days: {amber: 30, red: 60}   # no two-way contact
+  # Markers in the paperwork that mean "nobody at FlytBase replied".
+  no_reply_markers:
+    - "No reply on file"
+    - "No further reply on file"
+    - "Nobody has replied"
+    - "No reply sent"
+    - "No price sent"
+
+checks:
+  # Default verdict bands when a claim carries no explicit test.
+  utilisation: {supported: 0.8, partial: 0.4}        # share of contracted docks that flew in 30 days
+  # Words that classify an auto-derived claim (first matching type wins).
+  type_keywords:
+    budget: ["budget", "fund", "finance", "cost", "pay", "allocation", "saving", "roi", "premium", "euros", "million"]
+    authority: ["sign", "commit", "go through me", "approve", "decide", "call-off", "sign-off", "signed off"]
+    timeline: ["leaves", "january", "february", "months", "weeks ago", "renew", "deadline", "soon", "review is in"]
+    demand: ["want", "more docks", "quote", "tender", "opportunity", "case study", "scale", "need"]
+    satisfaction: ["useful", "keen", "pleased", "success", "happy", "proven"]
+    problem: ["fault", "battery", "offline", "not flown", "has not flown", "never uses", "weak", "drops", "not last", "cannot", "not signed"]
+    usage: ["fly", "flying", "flew", "flies", "use", "patrol", "missions", "operational"]
+  # Who to ask when a claim can't be settled from the data, by claim type.
+  # A stakeholder whose role contains one of these words is preferred; else the team member.
+  ask:
+    budget: {role_words: ["finance", "controller"], team: "team/achal_negi"}
+    authority: {role_words: ["procurement", "finance", "lead"], team: "team/achal_negi"}
+    usage: {role_words: ["inspector", "operations", "manager", "security"], team: "team/support_desk"}
+    demand: {role_words: ["lead", "head", "manager"], team: "team/achal_negi"}
+    satisfaction: {role_words: ["manager", "inspector"], team: "team/neel_sharma"}
+    timeline: {role_words: ["lead", "head", "manager"], team: "team/neel_sharma"}
+    problem: {role_words: ["it ", "infrastructure", "data protection", "manager"], team: "team/pranjal_suyal"}

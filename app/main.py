@@ -7,20 +7,24 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.config import ROOT, get_settings
+from app.engine.run import evaluate, resolve_metric
 from app.store import Store
 
 
-def load_store(settings):
-    """Open the DB, add any snapshot payloads it doesn't hold yet, and rebuild."""
-    store = Store(settings.data_dir / "crm.db")
-    added = store.import_snapshots(settings.snapshot_dir)
-    store.rebuild(settings.as_of)
-    return store, added
+def refresh_state(app, store, settings):
+    """Rebuild the store's tables and re-run the engine. Called after every data change."""
+    world, _ = store.rebuild(settings.as_of)
+    app.state.world = world
+    app.state.engine = evaluate(world, store.meta().get("as_of"))
 
 
 @asynccontextmanager
 async def lifespan(app):
-    app.state.store, app.state.snapshots_added = load_store(get_settings())
+    settings = get_settings()
+    store = Store(settings.data_dir / "crm.db")
+    app.state.store = store
+    app.state.snapshots_added = store.import_snapshots(settings.snapshot_dir)
+    refresh_state(app, store, settings)
     yield
 
 
@@ -74,5 +78,36 @@ def reload(request: Request):
         raise HTTPException(status_code=409, detail="live mode: the scheduler keeps the data current")
     st = store(request)
     added = st.import_snapshots(s.snapshot_dir)
-    st.rebuild(s.as_of)
+    refresh_state(request.app, st, s)
     return {"ok": True, "snapshots_added": added, "as_of": st.meta().get("as_of")}
+
+
+def engine_account(request, account):
+    acct = request.app.state.engine["accounts"].get(account)
+    if acct is None:
+        raise HTTPException(status_code=404, detail=f"unknown account: {account}")
+    return acct
+
+
+@app.get("/api/claims/{account}")
+def claims(account: str, request: Request):
+    """Every claim for an account with its verdict, numbers, evidence, causes, impact and who to ask."""
+    acct = engine_account(request, account)
+    return {"account": account, "as_of": request.app.state.engine["as_of"], "claims": acct["claims"]}
+
+
+@app.get("/api/metrics/{account}")
+def metrics(account: str, request: Request):
+    acct = engine_account(request, account)
+    return {"account": account, "as_of": request.app.state.engine["as_of"],
+            "metrics": [{k: m[k] for k in ("name", "value", "definition", "sources")} | {"row_count": len(m["rows"])} for m in acct["metrics"]]}
+
+
+@app.get("/api/metrics/{account}/{name}")
+def metric_trace(account: str, name: str, request: Request):
+    """Trace a metric: its definition and the exact rows it counted, each resolved to its content."""
+    engine_account(request, account)
+    m = resolve_metric(request.app.state.engine, request.app.state.world, account, name, store(request).record)
+    if m is None:
+        raise HTTPException(status_code=404, detail=f"unknown metric: {account}/{name}")
+    return m

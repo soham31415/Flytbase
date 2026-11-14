@@ -49,7 +49,7 @@ The account list comes from the data, never from code: get_my_accounts `accounts
 ## Hard rules
 - RATE LIMIT: one MCP call per minute per token, writes included. Inside the app, only the scheduler module may call the MCP. Outside the app, only scripts/pull.py, run by hand. Nothing else calls it, ever.
 - Never run scripts/pull.py while a live app (LIVE_MODE=true) is running anywhere with the same token: they share the budget.
-- Local development runs on snapshots in data/raw/ with LIVE_MODE=false. Never call the live API during development unless I explicitly ask.
+- Local development runs on snapshots in data/raw/ with LIVE_MODE=false. Claude may make live READ calls through scripts/pull.py whenever useful (standing approval; the rate limit still applies), but never while a live app runs with the same token. Writes (write_note) only come from the scheduler in Step 5.
 - The token lives only in the AQ_TOKEN env var. Never log it, print it, commit it, or send it to the browser.
 - Never invent an id, a fact, or a person. Every engine output item has a `sources: [ids]` list, and a validator drops any item citing an id not in the store.
 - data/ and .env are gitignored. The repo is public.
