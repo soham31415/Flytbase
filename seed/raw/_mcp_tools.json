@@ -1,0 +1,350 @@
+[
+  {
+    "name": "whoami",
+    "title": "Who am I",
+    "description": "Who you are and what is open to you now: whether your morning is over, which paperwork is open, and how many live events have happened.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_my_accounts",
+    "title": "My accounts",
+    "description": "Your two accounts as you left them this morning: the people you met, what each told you (with status claim, told or verified), your deals, offers, deadlines and the files you hold. Every item has an id to cite.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_file",
+    "title": "One of my files",
+    "description": "The text of a file you were given this morning, by its id from get_my_accounts.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "File id"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_new_account",
+    "title": "A new account",
+    "description": "A new account released to you, in the same shape as get_my_accounts.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Account id, from whoami's new_accounts",
+          "enum": [
+            "K"
+          ]
+        }
+      },
+      "required": [
+        "account"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_new_account_file",
+    "title": "A new account's file",
+    "description": "The text of one file from a new account.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "description": "Account id, from whoami's new_accounts",
+          "enum": [
+            "K"
+          ]
+        },
+        "file_id": {
+          "type": "string",
+          "description": "File id from get_new_account"
+        }
+      },
+      "required": [
+        "account",
+        "file_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_paperwork",
+    "title": "Paperwork on file",
+    "description": "The paperwork FlytBase had on file before you took over: calls, emails, contracts, deal history, tickets, every flight, devices, logins, invoices. Without an account: what there is for each and whether it is open. With one: its list of records.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "K"
+          ],
+          "description": "Account id"
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_paperwork_record",
+    "title": "One paperwork record",
+    "description": "One record from the paperwork, by its path from list_paperwork (for example contract.txt or usage_weekly.csv). CSV files also come back as rows, JSON as data.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "K"
+          ],
+          "description": "Account id"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path from list_paperwork"
+        }
+      },
+      "required": [
+        "account",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_all_paperwork",
+    "title": "Everything on file for one account",
+    "description": "Every record on file for one account in a single call: contract, deal history, every call and email, the full ticket log, every flight, devices and device events, logins, invoices and internal notes. Use this instead of fetching records one by one: calls are limited to one a minute.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "K"
+          ],
+          "description": "Account id"
+        }
+      },
+      "required": [
+        "account"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "search_paperwork",
+    "title": "Search the paperwork",
+    "description": "Lines in the records that hold every word you give (for example a ticket number, a dock id or a name), with the record each is in. Searches every account open to you, or one.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "Words to look for, at least two characters"
+        },
+        "account": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "K"
+          ],
+          "description": "Account id"
+        }
+      },
+      "required": [
+        "q"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_feature_requests",
+    "title": "Feature request log",
+    "description": "FlytBase's log of feature requests across its customers, with which of your accounts asked for each. Fictional.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_release_notes",
+    "title": "Software updates",
+    "description": "The overnight software updates sent to every dock. Fictional.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_flytbase_team",
+    "title": "FlytBase people",
+    "description": "The FlytBase colleagues named in the paperwork, with their roles. Fictional.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_signals",
+    "title": "Live events",
+    "description": "Things that have happened on your accounts since you took over, oldest first, each with when it was set off and the records it brings. New ones arrive during the build: check it regularly. One call a minute per token, so save what you fetch.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_data_format",
+    "title": "Data format",
+    "description": "The JSON Schema of get_my_accounts: every field and what it means.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_notes",
+    "title": "My notes",
+    "description": "Every note, task, risk and next step your tools have written back, oldest first.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "write_note",
+    "title": "Write a note",
+    "description": "Save a note, task, risk or next step against an account. It is kept with your game for the judges; it cannot change the game.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The note itself, up to 4,000 characters"
+        },
+        "account": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "K"
+          ],
+          "description": "Account id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "note",
+            "task",
+            "risk",
+            "next_step"
+          ],
+          "description": "note if left out"
+        },
+        "title": {
+          "type": "string",
+          "description": "A short title"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "openWorldHint": false
+    }
+  }
+]

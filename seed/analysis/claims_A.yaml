@@ -1,0 +1,212 @@
+# Claims for account A (Eastern Counties Police Alliance). Drafted by Claude, for your review.
+#
+# Two parts:
+# - claims: what the official story, emails and call notes assert. Ids A/claim/<n>, stable.
+# - fact_overrides: type / subject / test / evidence for the auto-derived fact claims (A/claim/f-<fact id>).
+# Every fact, open request row and open ticket becomes a claim automatically (app/engine/claims.py),
+# so new data from signals needs no edits here.
+#
+# test: metric comparisons -> all pass = supported, none = contradicted, mixed = partial.
+# evidence_for / evidence_against: ids, rendered as "analyst judgment".
+# possible_causes: always rendered as "inference" and listed as gaps to confirm.
+# premise_of: deals whose worth IS this claim; if it's contradicted, the deal is unbacked (CLAUDE.md).
+# quote: exact text from one of source_ids (whitespace-normalised); the tests check this.
+
+account: A
+claims:
+  - n: 1
+    said_by: official_story
+    type: usage
+    subject: []
+    quantity: 4
+    source_ids: [A/A]
+    quote: "Rollout under way. 4 forces, 35 docks"
+    test:
+      - {metric: forces.with_live_missions, op: ">=", value: 4}
+      - {metric: docks.never_flown, op: "==", value: 0}
+    note: "Two of four forces fly live missions; seven docks have never flown."
+
+  - n: 2
+    said_by: official_story
+    type: usage
+    subject: []
+    quantity: 35
+    source_ids: [A/A]
+    quote: "35 docks"
+    test:
+      - {metric: docks.contracted, op: "==", value: 35}
+      - {metric: docks.registered, op: "==", value: 35}
+
+  - n: 3
+    said_by: official_story
+    type: demand
+    subject: [A/a_tender]
+    quantity: 300
+    source_ids: [A/A]
+    quote: "300-dock framework tender in preparation."
+    ask:
+      question: "Who is writing the tender specification, and what is the timetable? Nothing is in writing (A/deal_history.json)."
+      who: team/achal_negi
+    note: "Rhys Calder's account only; no spec, timetable or evaluation method on file (A/deal_history.json)."
+
+  - n: 4
+    said_by: A/rhys_calder
+    type: authority
+    subject: [A/a_renewal]
+    date: "2026-05-19"
+    source_ids: [A/calls/2026-05-19_intro_call.txt]
+    quote: "Honestly, the simplest thing is to go through me."
+    evidence_against: [A/hd_calloff_2, A/rc_funding_2, A/emails/2026-11-18_karen_event.txt]
+    note: "Each force's finance signs its own call-off, and Karen now writes to us directly."
+
+  - n: 5
+    said_by: A/rhys_calder
+    type: timeline
+    subject: [A/a_renewal]
+    date: "2026-10-20"
+    source_ids: [A/calls/2026-10-20_check_in.txt]
+    quote: "Fine. It will go through."
+    evidence_for: [A/a_renewal]
+    evidence_against: [A/contract.txt, A/champion_leaves, A/hd_calloff_2]
+    note: "Stage is agreed in the export, but nothing is signed, the contract doesn't auto-renew, and Rhys leaves before 2027-02-28."
+    ask:
+      question: "Who signs the renewal order for each force before 2027-02-28?"
+      who: A/ewan_brooks
+
+  - n: 6
+    said_by: A/rhys_calder
+    type: authority
+    subject: [A/a_renewal]
+    date: "2026-11-17"
+    source_ids: [A/emails/2026-11-17_rhys_moving.txt]
+    quote: "Anything we have agreed stands."
+    ask:
+      question: "Who honours what was agreed after you hand over in January, and can we have it in writing?"
+      who: A/rhys_calder
+
+  - n: 7
+    said_by: A/karen_mbeki
+    type: problem
+    subject: [A/ECPA-D16, A/ECPA-D29]
+    quantity: 2
+    date: "2026-08-11"
+    source_ids: [A/emails/2026-08-11_karen_batteries.txt]
+    quote: "Two of our docks have batteries that will not last a night shift any more."
+    replaces: [A/claim/r-row5]
+    test:
+      - {metric: docks.battery_warning_docks, op: ">=", value: 2}
+      - {metric: docks.battery_warning_docks, op: contains, value: A/ECPA-D16}
+      - {metric: docks.battery_warning_docks, op: contains, value: A/ECPA-D29}
+    possible_causes:
+      - text: "The two docks are ECPA-D16 and ECPA-D29: 17 battery warnings each, July to October."
+        ids: [A/ECPA-D16, A/ECPA-D29, A/device_events.csv]
+
+  - n: 8
+    said_by: A/karen_mbeki
+    type: demand
+    subject: [A/a_westmere]
+    date: "2026-11-18"
+    source_ids: [A/emails/2026-11-18_karen_event.txt]
+    quote: "I want the docks to carry more of it than they do now."
+    test:
+      - {metric: forces.Westmere.live_share, op: ">=", value: 0.6}
+      - {metric: docks.idle_but_online, op: "==", value: 0}
+    note: "Westmere is busy (14 of 18 docks live) while other forces' docks sit idle: room to move docks, not only to add them."
+
+fact_overrides:
+  rc_appetite_0:
+    type: usage
+    test:
+      - {metric: forces.with_live_missions, op: ">=", value: 4}
+    evidence_against: [A/rc_appetite_2]
+    possible_causes:
+      - text: "Tarn Valley can't go live until its DPIA is signed."
+        ids: [A/fo_dpia_2, A/km_others_2]
+      - text: "Norwold's chief constable is cautious after a local privacy row."
+        ids: [A/km_others_2]
+  rc_appetite_2:
+    type: usage
+    test:
+      - {metric: forces.with_live_missions, op: "==", value: 2}
+      - {metric: forces.Tarn Valley.live_share, op: "==", value: 0}
+      - {metric: forces.Norwold.live_share, op: "==", value: 0}
+  km_usage_0:
+    type: usage
+    subject: [force:Westmere]
+    test:
+      - {metric: forces.Westmere.live_share, op: ">=", value: 0.6}
+  km_others_2:
+    type: problem
+    subject: [A/a_tarn]
+    test:
+      - {metric: forces.Tarn Valley.live_share, op: "==", value: 0}
+      - {metric: forces.Norwold.live_share, op: "==", value: 0}
+  km_value_2:
+    type: usage
+    subject: [force:Westmere]
+    ask:
+      question: "Has anyone compared cost per flight with the helicopter? Only anecdotes are on file."
+      who: A/karen_mbeki
+  km_staff_2:
+    type: problem
+    subject: [A/a_westmere]
+    ask:
+      question: "What staffing would Westmere commit to for more docks: nine more trained operators and shift cover?"
+      who: A/karen_mbeki
+  kb_stadium_view:
+    type: problem
+    subject: [A/a_westmere]
+    ask:
+      question: "Can you introduce us to the superintendent before any stadium quote? Nobody has asked her."
+      who: A/karen_mbeki
+  rc_stadium_0:
+    type: demand
+    subject: [A/a_westmere]
+    quantity: 30
+    test:
+      - {metric: forces.Westmere.live_share, op: ">=", value: 0.6}
+      - {metric: docks.idle_but_online, op: "==", value: 0}
+    evidence_against: [A/kb_stadium_view, A/km_staff_2]
+  rc_tender_0:
+    type: demand
+    subject: [A/a_tender]
+    quantity: 300
+    ask:
+      question: "Who is writing the specification, and who is the alliance procurement lead?"
+      who: team/achal_negi
+  rc_funding_0:
+    type: budget
+    subject: [A/a_renewal]
+    evidence_against: [A/rc_funding_2, A/hd_calloff_2, A/invoices.json]
+    possible_causes:
+      - text: "The four-part invoicing per Schedule 2 is each force paying its own share."
+        ids: [A/invoices.json, A/contract.txt, A/rc_funding_2]
+    ask:
+      question: "Does Metro Central's finance approve its share of the renewal, and who signs for the other three forces?"
+      who: A/ewan_brooks
+  rc_funding_2:
+    type: budget
+    subject: [A/a_renewal]
+    evidence_for: [A/invoices.json, A/hd_calloff_2]
+  hd_calloff_2:
+    type: authority
+    subject: [A/a_renewal, A/a_tender]
+    evidence_for: [A/rc_funding_2]
+  fo_dpia_0:
+    type: problem
+    subject: [A/a_tarn]
+    ask:
+      question: "What does the DPIA still need besides the data-flow documents?"
+      who: A/fatima_osei
+  fo_dpia_2:
+    type: problem
+    subject: [A/a_tarn]
+    test:
+      - {metric: tickets.open_unowned, op: ">=", value: 1}
+      - {metric: tickets.chased, op: ">=", value: 1}
+    possible_causes:
+      - text: "A/FB-10412 (document request from a force, open since 2026-06-29, chased, no owner) is Fatima Osei's request."
+        ids: [A/FB-10412, A/fo_dpia_2, A/internal_notes.json]
+    ask:
+      question: "Is FB-10412 your request, and which data-flow documents exactly do you need?"
+      who: A/fatima_osei

@@ -1,0 +1,4 @@
+{
+  "id": "h_network_notice_15x",
+  "text": "BRINDLE HARBOUR AUTHORITY - IT NOTICE\nSubject: Segmentation of yard and quay devices\nFrom: Sam Okoye, IT Infrastructure Manager\n\nFrom the autumn, every device on the yard and quay networks moves to a new segmented network.\nDevices not registered with IT by then will lose network access until an exception is approved.\nException requests need: device type, location, ports and destinations, data volumes, and an owner.\n\nRegistered so far: CCTV, gate controllers, crane telemetry.\nNot registered: (none recorded for drone docks)\n"
+}

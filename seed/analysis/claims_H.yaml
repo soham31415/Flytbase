@@ -1,0 +1,92 @@
+# Claims for account H (Brindle Harbour Authority). Drafted by Claude, for your review.
+# Same format as claims_A.yaml (see its header).
+
+account: H
+claims:
+  - n: 1
+    said_by: official_story
+    type: usage
+    subject: []
+    quantity: 6
+    source_ids: [H/H]
+    quote: "6 docks across three quays and a container yard."
+    test:
+      - {metric: docks.contracted, op: "==", value: 6}
+      - {metric: sites.with_patrols, op: ">=", value: 4}
+    note: "Six docks, but the container yard's two have no patrol flights."
+
+  - n: 2
+    said_by: official_story
+    type: budget
+    subject: [H/h_renewal_15x]
+    source_ids: [H/H]
+    quote: "Saves about 400,000 a year."
+    evidence_against: [H/h_saving_basis_15x, H/h_finance_unseen_15x]
+
+  - n: 3
+    said_by: official_story
+    type: demand
+    subject: [H/h_harbours_15x]
+    quantity: 2
+    source_ids: [H/H]
+    quote: "Ready to expand to two more harbours."
+    test:
+      - {metric: docks.idle_but_online, op: "==", value: 0}
+      - {metric: sites.Container yard.patrol_flights, op: ">=", value: 1}
+
+  - n: 4
+    said_by: H/h_marcus_15x
+    type: budget
+    subject: [H/h_renewal_15x, H/h_harbours_15x]
+    date: "2026-10-23"
+    source_ids: [H/emails/2026-10-23_marcus_expand.txt]
+    quote: "The six docks are a success: about 400,000 a year saved."
+    evidence_against: [H/h_saving_basis_15x, H/h_finance_unseen_15x]
+    ask:
+      question: "Can finance see the 400,000 in the accounts? No patrol contract has changed."
+      who: H/h_priya_15x
+
+fact_overrides:
+  h_saving_claim_15x:
+    type: budget
+    subject: [H/h_renewal_15x]
+    evidence_against: [H/h_saving_basis_15x, H/h_finance_unseen_15x]
+    ask:
+      question: "What would finance accept as a measured saving before the renewal?"
+      who: H/h_priya_15x
+  h_saving_basis_15x:
+    type: budget
+    subject: [H/h_renewal_15x]
+  h_finance_unseen_15x:
+    type: budget
+    subject: [H/h_renewal_15x]
+  h_finance_renewal_15x:
+    type: authority
+    subject: [H/h_renewal_15x]
+    note: "The first order was signed by Marcus Hale (H/contract.txt); Priya says she signs the renewal."
+    ask:
+      question: "Who signs the renewal order, and what must it show?"
+      who: H/h_priya_15x
+  h_yard_blocked_15x:
+    type: problem
+    subject: [H/h_yard_15x]
+    test:
+      - {metric: tickets.open_unowned, op: ">=", value: 1}
+      - {metric: sites.Container yard.patrol_flights, op: "==", value: 0}
+  h_contractor_leaving_15x:
+    type: timeline
+    subject: [H/h_renewal_15x]
+    ask:
+      question: "Can you write down the launch steps, patrol routes and alert rota before your contract ends?"
+      who: H/h_tom_15x
+  h_it_not_involved_15x:
+    type: problem
+    subject: [H/h_yard_15x]
+    evidence_for: [H/h_network_notice_15x]
+  h_expand_wish_15x:
+    type: demand
+    subject: [H/h_harbours_15x]
+    quantity: 2
+    test:
+      - {metric: docks.idle_but_online, op: "==", value: 0}
+      - {metric: sites.Container yard.patrol_flights, op: ">=", value: 1}

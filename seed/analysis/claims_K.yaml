@@ -1,0 +1,83 @@
+# Claims for account K (Kestrel Estates). Drafted by Claude, for your review.
+# Same format as claims_A.yaml (see its header).
+
+account: K
+claims:
+  - n: 1
+    said_by: official_story
+    type: usage
+    subject: []
+    source_ids: [K/K]
+    quote: "1 dock paid, 0 flying."
+    test:
+      - {metric: docks.contracted, op: "==", value: 1}
+      - {metric: docks.flew_90d, op: "==", value: 0}
+      - {metric: invoices.unpaid, op: "==", value: 0}
+
+  - n: 2
+    said_by: K/k_dana_15x
+    type: problem
+    subject: [K/KE-D01]
+    date: "2026-10-19"
+    source_ids: [K/emails/2026-10-19_dana_when.txt]
+    quote: "It has not flown."
+    test:
+      - {metric: docks.never_flown, op: contains, value: K/KE-D01}
+
+  - n: 3
+    said_by: K/k_dana_15x
+    type: problem
+    subject: []
+    date: "2026-10-19"
+    source_ids: [K/emails/2026-10-19_dana_when.txt]
+    quote: "The firm that installed it has stopped answering."
+    evidence_for: [K/profile.json, K/K_install_note_15x]
+
+  - n: 4
+    said_by: K/k_dana_15x
+    type: budget
+    subject: [K/k_golive_15x]
+    date: "2026-10-19"
+    source_ids: [K/emails/2026-10-19_dana_when.txt]
+    quote: "It has been paid for."
+    test:
+      - {metric: invoices.unpaid, op: "==", value: 0}
+
+fact_overrides:
+  k_keen_15x:
+    type: satisfaction
+    subject: [K/k_golive_15x]
+    evidence_against: [K/k_board_doubts_15x, K/emails/2026-10-19_dana_when.txt]
+  k_installer_gone_15x:
+    type: problem
+    evidence_for: [K/profile.json, K/K_install_note_15x]
+  k_no_pilot_15x:
+    type: problem
+    subject: [K/k_golive_15x]
+    evidence_for: [K/K_install_note_15x, K/contract.txt]
+  k_need_entrances_15x:
+    type: demand
+    subject: [K/k_golive_15x]
+    evidence_for: [K/deal_history.json]
+    ask:
+      question: "Which entrances need night patrol, and on which nights?"
+      who: K/k_dana_15x
+  k_board_pays_15x:
+    type: authority
+    subject: [K/k_golive_15x, K/k_south_15x]
+    ask:
+      question: "When is the next residents' board meeting, and what does it need to see to renew the security budget?"
+      who: K/k_graham_15x
+  k_board_doubts_15x:
+    type: satisfaction
+    subject: [K/k_golive_15x]
+    ask:
+      question: "What would reassure the residents before the board votes?"
+      who: K/k_graham_15x
+  k_south_wish_15x:
+    type: demand
+    subject: [K/k_south_15x]
+    quantity: 1
+    test:
+      - {metric: docks.flew_90d, op: ">=", value: 1}
+    note: "A second dock is asked for while the first has never flown."

@@ -1,0 +1,53 @@
+{
+  "player_id": "ba8376bc-5960-43eb-a0f7-37bdb2f239a7",
+  "your_morning_over": true,
+  "new_accounts": [
+    {
+      "id": "K",
+      "name": "Kestrel Estates",
+      "path": "/drops/K"
+    },
+    {
+      "id": "H",
+      "name": "Brindle Harbour Authority",
+      "path": "/drops/H"
+    }
+  ],
+  "pack": [
+    {
+      "account": "A",
+      "open": true
+    },
+    {
+      "account": "B",
+      "open": true
+    },
+    {
+      "account": "K",
+      "open": true
+    },
+    {
+      "account": "H",
+      "open": true
+    }
+  ],
+  "signals": 3,
+  "paths": [
+    "/me",
+    "/export",
+    "/files/:id",
+    "/pack",
+    "/pack/team",
+    "/pack/:account",
+    "/pack/:account/all",
+    "/pack/:account/<path>",
+    "/pack/search?q=",
+    "/pack/feature-requests",
+    "/pack/release-notes",
+    "/signals",
+    "/schema",
+    "/notes (GET, POST)",
+    "/drops/:id",
+    "/drops/:id/files/:fileId"
+  ]
+}

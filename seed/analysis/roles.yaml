@@ -1,0 +1,89 @@
+# Who holds the power on each deal (Q2). Analyst judgment: every entry cites ids.
+# who: a stakeholder id, or null when nobody we know fills the role (it becomes a Q5 gap; `ask` says who could fill it).
+# Roles: decider, payer, user, blocker, champion.
+
+A:
+  a_renewal:
+    decider: {who: null, ask: A/ewan_brooks, sources: [A/rc_funding_2, A/hd_calloff_2, A/contract.txt], note: "Each force's finance signs its own share; the force CFOs aren't met."}
+    payer: {who: A/ewan_brooks, sources: [A/rc_funding_2, A/invoices.json], note: "Metro Central's finance; the other three forces' payers are unknown."}
+    user: {who: A/karen_mbeki, sources: [A/km_usage_1, A/U02]}
+    blocker: {who: null, sources: [A/rc_appetite_2], note: "Forces that never fly may not fund a renewal."}
+    champion: {who: A/rhys_calder, sources: [A/calls/2026-10-20_check_in.txt, A/champion_leaves], note: "Leaves in January; no successor named."}
+  a_tarn:
+    decider: {who: A/fatima_osei, sources: [A/fo_dpia_0, A/fo_dpia_2]}
+    payer: {who: null, ask: A/rhys_calder, sources: [A/rc_funding_2]}
+    user: {who: null, ask: A/fatima_osei, sources: [A/rc_appetite_2]}
+    blocker: {who: null, sources: [A/fo_dpia_2, A/FB-10412], note: "FlytBase itself: the data-flow documents were never sent."}
+    champion: {who: null, ask: A/karen_mbeki, sources: [A/emails/2026-09-03_usage_question.txt]}
+  a_westmere:
+    decider: {who: null, ask: A/karen_mbeki, sources: [A/kb_stadium_view], note: "The Westmere superintendent; never asked."}
+    payer: {who: null, ask: A/karen_mbeki, sources: [A/rc_funding_2]}
+    user: {who: A/karen_mbeki, sources: [A/km_staff_2, A/calls/2025-12-16_pilot_review.txt]}
+    blocker: {who: null, sources: [A/km_staff_2, A/kb_stadium_view], note: "Staffing: nine more trained operators needed."}
+    champion: {who: A/rhys_calder, sources: [A/rc_stadium_0, A/calls/2026-10-20_check_in.txt], note: "The stadium project is this deal; Rhys pushes it but leaves in January."}
+  a_tender:
+    decider: {who: null, ask: A/rhys_calder, sources: [A/calls/2025-12-16_pilot_review.txt], note: "The alliance procurement lead, never named."}
+    payer: {who: null, ask: A/rhys_calder, sources: [A/hd_calloff_2]}
+    user: {who: null, sources: [A/rc_tender_0]}
+    blocker: {who: null, sources: [A/deal_history.json]}
+    champion: {who: A/rhys_calder, sources: [A/rc_tender_0, A/champion_leaves]}
+
+B:
+  b_renewal:
+    decider: {who: B/stefan_roy, sources: [B/contract.txt]}
+    payer: {who: B/nadia_rahman, sources: [B/nr_cost_2, B/emails/2026-10-08_finance_mailbox.txt], note: "Costs are allocated to plants by finance."}
+    user: {who: B/beatriz_alonso, sources: [B/ba_use_2]}
+    blocker: {who: B/nadia_rahman, sources: [B/nr_cost_2, B/nr_evidence_2], note: "Won't accept the savings without measured evidence."}
+    champion: {who: B/stefan_roy, sources: [B/calls/2026-10-13_check_in.txt]}
+  b_idle:
+    decider: {who: B/stefan_roy, sources: [B/calls/2026-07-14_check_in.txt]}
+    payer: {who: null, ask: B/nadia_rahman, sources: [B/sr_plants_2]}
+    user: {who: null, ask: B/beatriz_alonso, sources: [B/ba_other_1], note: "The idle plants' managers aren't met."}
+    blocker: {who: null, ask: B/owen_fitch, sources: [B/of_weak_1, B/FB-10903], note: "Weak network links; nobody owns adoption."}
+    champion: {who: null, ask: B/stefan_roy, sources: [B/sr_repl_2], note: "The deputy knows how, and is leaving."}
+  b_insurance:
+    decider: {who: null, ask: B/julian_tate, sources: [B/insurer_premium_letter], note: "The insurer, at its review."}
+    payer: {who: null, sources: [B/insurer_premium_letter]}
+    user: {who: null, ask: B/stefan_roy, sources: [B/insurer_premium_letter]}
+    blocker: {who: null, sources: [B/profile.json], note: "No dock-to-plant list, so no logs by plant."}
+    champion: {who: B/julian_tate, sources: [B/jt_prem_2, B/jt_review_2]}
+  b_sister:
+    decider: {who: null, ask: B/stefan_roy, sources: [B/deal_history.json], note: "Nobody at the sister company is on file."}
+    payer: {who: null, ask: B/stefan_roy, sources: [B/nr_sister_1]}
+    user: {who: null, sources: [B/deal_history.json]}
+    blocker: {who: null, sources: [B/sr_case_3]}
+    champion: {who: B/stefan_roy, sources: [B/emails/2026-09-22_stefan_case_study.txt]}
+
+K:
+  k_golive_15x:
+    decider: {who: K/k_graham_15x, sources: [K/k_board_pays_15x], note: "The residents' board votes on spend."}
+    payer: {who: K/k_graham_15x, sources: [K/k_board_pays_15x]}
+    user: {who: K/k_dana_15x, sources: [K/k_need_entrances_15x]}
+    blocker: {who: null, sources: [K/k_no_pilot_15x, K/k_insurer_not_told_15x], note: "No certified pilot; insurer not told."}
+    champion: {who: K/k_dana_15x, sources: [K/emails/2026-10-19_dana_when.txt]}
+  k_south_15x:
+    decider: {who: K/k_graham_15x, sources: [K/k_board_pays_15x]}
+    payer: {who: K/k_graham_15x, sources: [K/k_board_pays_15x]}
+    user: {who: K/k_dana_15x, sources: [K/k_south_wish_15x]}
+    blocker: {who: null, sources: [K/k_south_unassessed_15x]}
+    champion: {who: K/k_dana_15x, sources: [K/k_south_wish_15x]}
+
+H:
+  h_renewal_15x:
+    decider: {who: H/h_priya_15x, sources: [H/h_finance_renewal_15x]}
+    payer: {who: H/h_priya_15x, sources: [H/h_finance_renewal_15x]}
+    user: {who: H/h_marcus_15x, sources: [H/h_two_quays_15x]}
+    blocker: {who: H/h_priya_15x, sources: [H/h_finance_unseen_15x], note: "Won't renew on a saving she can't see."}
+    champion: {who: H/h_marcus_15x, sources: [H/emails/2026-10-23_marcus_expand.txt]}
+  h_yard_15x:
+    decider: {who: H/h_elena_15x, sources: [H/h_yard_blocked_15x]}
+    payer: {who: null, ask: H/h_priya_15x, sources: [H/contract.txt]}
+    user: {who: H/h_marcus_15x, sources: [H/h_two_quays_15x]}
+    blocker: {who: null, sources: [H/h_vendor_silent_15x, H/FB-10231], note: "FlytBase itself: the vendor never replied."}
+    champion: {who: H/h_marcus_15x, sources: [H/h_expand_wish_15x]}
+  h_harbours_15x:
+    decider: {who: H/h_priya_15x, sources: [H/h_finance_renewal_15x]}
+    payer: {who: H/h_priya_15x, sources: [H/h_finance_renewal_15x]}
+    user: {who: null, sources: [H/h_expand_wish_15x]}
+    blocker: {who: null, sources: [H/h_saving_basis_15x]}
+    champion: {who: H/h_marcus_15x, sources: [H/h_expand_wish_15x]}

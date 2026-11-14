@@ -1,0 +1,529 @@
+{
+  "account": "H",
+  "records": [
+    {
+      "path": "calls/2026-10-21_check_in.txt",
+      "kind": "call",
+      "text": "CALL TRANSCRIPT (auto-recorded, tidied)\nDate: 21 October 2026\nOn the call: Achal Negi (FlytBase, business development); Marcus Hale (head of port operations)\n\nAchal: It has been a while since go-live. How is it going?\nMarcus: Very well. 6 docks across three quays and a container yard. It saves about 400,000 a year.\nAchal: Good to hear. Where does that figure come from?\nMarcus: Patrol hours, mostly. I can walk you through it another time.\nAchal: And the renewal in April?\nMarcus: I want to talk about more than the renewal. We are ready to expand to two more harbours.\nAchal: Who else would be involved in that on your side?\nMarcus: It is my operation. I will bring people in when there is something to show them.\nAchal: You will have a customer success manager from next month. I will hand this over to them.\nMarcus: Fine. Tell them to call me.\n\nFollow-ups noted\n- Assign a CSM. Done, November 2026.\n- Basis of the savings figure: not supplied.\n"
+    },
+    {
+      "path": "calls_index.json",
+      "kind": "calls_index",
+      "data": {
+        "note": "Every call on file, oldest first, with its summary and actions. `path` is the notes or transcript where one was kept; a call with no path was summarised only.",
+        "calls": [
+          {
+            "date": "2026-10-21",
+            "title": "Check-in",
+            "record": "transcript",
+            "customer": [
+              "Marcus Hale"
+            ],
+            "flytbase": [
+              "Achal Negi"
+            ],
+            "summary": "First call since go-live. Marcus Hale quoted a saving and said the authority is ready to expand to two more harbours. A CSM to be assigned.",
+            "actions": [
+              "Assign a CSM. Done, November 2026.",
+              "Basis of the savings figure: not supplied."
+            ],
+            "path": "calls/2026-10-21_check_in.txt"
+          }
+        ]
+      }
+    },
+    {
+      "path": "contract.txt",
+      "kind": "contract",
+      "text": "ORDER FORM SUMMARY (customer success copy)\nCustomer: Brindle Harbour Authority, port operations\nSigned: 2 March 2026, by Marcus Hale, head of port operations\nCurrency: pounds sterling\n\nWhat was ordered\n- 6 docks with aircraft, and the FlytBase platform for all of them.\n- Installation by a contractor of the customer's choosing, to FlytBase's install guide.\n\nPrice and term\n- 96,000 a year.\n- Term: 13 April 2026 to 12 April 2027.\n- No automatic renewal. A renewal needs a new order before the term ends.\n\nInvoicing\n- One invoice a year, to port operations.\n\nSupport\n- Standard support: support desk in business hours.\n- The customer keeps each dock connected to its own network.\n\nData\n- Standard data processing terms (Schedule 3).\n- Customer-specific documentation is supplied on request.\n\nNot covered by this order\n- Docks at any other harbour.\n- Any statement by FlytBase about savings.\n"
+    },
+    {
+      "path": "deal_history.json",
+      "kind": "deal_history",
+      "data": {
+        "account": "H",
+        "currency": "GBP",
+        "history": [
+          {
+            "date": "2026-01",
+            "what": "Enquiry",
+            "detail": "Marcus Hale, head of port operations, asked about docks for security patrols of the quays and the yard."
+          },
+          {
+            "date": "2026-03-02",
+            "what": "Order form signed",
+            "detail": "6 docks and the platform, 96,000 a year, signed by Marcus Hale.",
+            "value": 96000
+          },
+          {
+            "date": "2026-03 to 2026-04",
+            "what": "Rollout",
+            "detail": "Installed and set up by a contractor hired by the authority (Tom Reyes)."
+          },
+          {
+            "date": "2026-04-13",
+            "what": "Term starts",
+            "detail": "One invoice to port operations. Paid."
+          },
+          {
+            "date": "2026-04-14",
+            "what": "Data protection request received",
+            "detail": "From the authority's data protection lead. Never answered. See requests.csv."
+          },
+          {
+            "date": "2026-10-21",
+            "what": "Check-in call",
+            "detail": "Marcus Hale says the docks save about 400,000 a year and that the authority is ready to expand to two more harbours. See calls/2026-10-21_check_in.txt."
+          },
+          {
+            "date": "2026-11",
+            "what": "Assigned to customer success",
+            "detail": "The account passes to you."
+          }
+        ],
+        "on_file_as_open_at_handover": [
+          {
+            "what": "Renewal of the 6 docks",
+            "value": 96000,
+            "due": "2027-04-12",
+            "basis": "Contract."
+          },
+          {
+            "what": "Two more harbours",
+            "value": null,
+            "basis": "Marcus Hale's account only. No budget holder or timetable on file."
+          }
+        ],
+        "note": "What each next step is worth is in the account brief and in what you find out."
+      }
+    },
+    {
+      "path": "device_events.csv",
+      "kind": "device_events",
+      "text": "date,time,dock_id,event,detail\n2026-08-03,22:10,D4,lid_stuck,Ticket FB-10688\n2026-08-04,08:30,D4,remote_reset,Ticket FB-10688\n2026-08-21,09:39,D1,connection_lost,\n2026-08-21,10:07,D1,connection_restored,\n2026-09-04,07:50,D6,connection_lost,\n2026-09-04,08:27,D6,connection_restored,\n2026-09-09,18:51,D5,connection_lost,\n2026-09-09,19:08,D5,connection_restored,\n2026-09-16,03:04,D5,software_update,\n2026-09-16,03:05,D1,software_update,\n2026-09-16,03:14,D3,software_update,\n2026-09-16,03:19,D6,software_update,\n2026-09-16,03:36,D2,software_update,\n2026-09-16,03:36,D4,software_update,\n2026-10-10,03:40,D5,connection_lost,\n2026-10-10,04:17,D5,connection_restored,\n2026-10-20,00:40,D5,connection_lost,\n2026-10-20,00:51,D5,connection_restored,\n2026-10-21,20:59,D3,connection_lost,\n2026-10-21,21:30,D3,connection_restored,\n2026-10-22,14:26,D6,connection_lost,\n2026-10-22,14:52,D6,connection_restored,\n"
+    },
+    {
+      "path": "devices.json",
+      "kind": "devices",
+      "data": {
+        "note": "Docks registered to this account, with the date each was commissioned under the current order (docks from a pilot or trial were commissioned again). Which site each dock sits at is not in this record.",
+        "docks": [
+          {
+            "dock_id": "D1",
+            "dock_serial": "FBD15M02294",
+            "aircraft_serial": "FBA57G54772",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-03-27",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          },
+          {
+            "dock_id": "D2",
+            "dock_serial": "FBD46E33239",
+            "aircraft_serial": "FBA47E44816",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-03-31",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          },
+          {
+            "dock_id": "D3",
+            "dock_serial": "FBD86V36122",
+            "aircraft_serial": "FBA34E79734",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-03-27",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          },
+          {
+            "dock_id": "D4",
+            "dock_serial": "FBD19G81742",
+            "aircraft_serial": "FBA62Y76873",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-04-03",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          },
+          {
+            "dock_id": "D5",
+            "dock_serial": "FBD43M04439",
+            "aircraft_serial": "FBA33X16781",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-04-03",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          },
+          {
+            "dock_id": "D6",
+            "dock_serial": "FBD27B48872",
+            "aircraft_serial": "FBA28X06222",
+            "model": "Standard dock, 2025 model",
+            "commissioned": "2026-03-17",
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          }
+        ]
+      }
+    },
+    {
+      "path": "emails/2026-10-23_marcus_expand.txt",
+      "kind": "email",
+      "text": "From: Marcus Hale\nTo: Achal Negi (FlytBase)\nDate: 23 October 2026\nSubject: Two more harbours\n\nAchal,\n\nFollowing our call. The six docks are a success: about 400,000 a year saved. We are ready to expand\nto two more harbours. Send me an outline price for the same again at each.\n\nMarcus\n\n[No price sent. Passed to the new CSM.]\n"
+    },
+    {
+      "path": "flights.csv",
+      "kind": "flights",
+      "text": "flight_id,date,start_time,dock_id,duration_min,mode,result,note\nBH-F00001,2026-08-01,03:59,D2,27,scheduled,completed,\nBH-F00002,2026-08-01,09:34,D4,12,manual,completed,\nBH-F00003,2026-08-01,15:46,D3,7,manual,completed,\nBH-F00004,2026-08-01,16:37,D1,27,scheduled,completed,\nBH-F00005,2026-08-02,05:02,D1,19,scheduled,completed,\nBH-F00006,2026-08-02,20:27,D2,21,scheduled,completed,\nBH-F00007,2026-08-03,11:09,D1,27,scheduled,completed,\nBH-F00008,2026-08-03,23:01,D2,18,scheduled,completed,\nBH-F00009,2026-08-04,12:29,D1,27,scheduled,completed,\nBH-F00010,2026-08-04,13:35,D2,22,scheduled,completed,\nBH-F00011,2026-08-05,00:46,D2,22,scheduled,completed,\nBH-F00012,2026-08-05,12:55,D1,21,scheduled,completed,\nBH-F00013,2026-08-05,15:16,D5,15,manual,completed,\nBH-F00014,2026-08-06,06:29,D2,8,scheduled,returned_early,wind\nBH-F00015,2026-08-06,10:52,D1,29,scheduled,completed,\nBH-F00016,2026-08-07,05:13,D2,18,scheduled,completed,\nBH-F00017,2026-08-07,09:13,D1,24,scheduled,completed,\nBH-F00018,2026-08-08,10:40,D4,6,manual,completed,\nBH-F00019,2026-08-08,15:52,D1,30,scheduled,completed,\nBH-F00020,2026-08-08,16:55,D2,20,scheduled,completed,\nBH-F00021,2026-08-09,02:28,D1,22,scheduled,completed,\nBH-F00022,2026-08-09,07:27,D2,24,scheduled,completed,\nBH-F00023,2026-08-10,04:27,D2,30,scheduled,completed,\nBH-F00024,2026-08-10,06:18,D1,30,scheduled,completed,\nBH-F00025,2026-08-10,11:25,D4,13,manual,completed,\nBH-F00026,2026-08-11,05:36,D2,19,scheduled,completed,\nBH-F00027,2026-08-11,16:54,D1,30,scheduled,completed,\nBH-F00028,2026-08-12,20:41,D2,27,scheduled,completed,\nBH-F00029,2026-08-12,21:14,D1,18,scheduled,completed,\nBH-F00030,2026-08-13,00:10,D2,23,scheduled,completed,\nBH-F00031,2026-08-13,23:27,D1,21,scheduled,completed,\nBH-F00032,2026-08-14,03:29,D2,24,scheduled,completed,\nBH-F00033,2026-08-14,16:41,D1,25,scheduled,completed,\nBH-F00034,2026-08-15,09:23,D3,13,manual,completed,\nBH-F00035,2026-08-15,12:48,D1,28,scheduled,completed,\nBH-F00036,2026-08-15,23:13,D2,20,scheduled,completed,\nBH-F00037,2026-08-16,15:44,D2,28,scheduled,completed,\nBH-F00038,2026-08-16,17:53,D1,18,scheduled,completed,\nBH-F00039,2026-08-17,12:00,D2,20,scheduled,completed,\nBH-F00040,2026-08-17,21:27,D1,9,scheduled,returned_early,wind\nBH-F00041,2026-08-18,05:31,D1,26,scheduled,completed,\nBH-F00042,2026-08-18,10:25,D2,7,scheduled,returned_early,wind\nBH-F00043,2026-08-19,07:41,D1,22,scheduled,completed,\nBH-F00044,2026-08-19,08:12,D2,21,scheduled,completed,\nBH-F00045,2026-08-19,15:11,D3,8,manual,completed,\nBH-F00046,2026-08-20,03:40,D2,18,scheduled,completed,\nBH-F00047,2026-08-20,11:58,D1,21,scheduled,completed,\nBH-F00048,2026-08-21,13:02,D1,29,scheduled,completed,\nBH-F00049,2026-08-21,20:34,D2,29,scheduled,completed,\nBH-F00050,2026-08-22,07:52,D2,20,scheduled,completed,\nBH-F00051,2026-08-22,10:03,D1,24,scheduled,completed,\nBH-F00052,2026-08-23,06:30,D1,26,scheduled,completed,\nBH-F00053,2026-08-23,08:09,D2,21,scheduled,completed,\nBH-F00054,2026-08-24,05:17,D2,29,scheduled,completed,\nBH-F00055,2026-08-24,10:24,D1,29,scheduled,completed,\nBH-F00056,2026-08-25,18:05,D1,23,scheduled,completed,\nBH-F00057,2026-08-25,18:22,D2,27,scheduled,completed,\nBH-F00058,2026-08-26,05:06,D1,21,scheduled,completed,\nBH-F00059,2026-08-26,07:43,D2,20,scheduled,completed,\nBH-F00060,2026-08-27,10:09,D5,7,manual,completed,\nBH-F00061,2026-08-27,13:45,D4,15,manual,completed,\nBH-F00062,2026-08-27,17:22,D2,20,scheduled,completed,\nBH-F00063,2026-08-27,23:48,D1,21,scheduled,completed,\nBH-F00064,2026-08-28,13:51,D2,27,scheduled,completed,\nBH-F00065,2026-08-28,23:18,D1,28,scheduled,completed,\nBH-F00066,2026-08-29,06:35,D2,23,scheduled,completed,\nBH-F00067,2026-08-29,10:16,D1,29,scheduled,completed,\nBH-F00068,2026-08-30,04:02,D1,27,scheduled,completed,\nBH-F00069,2026-08-30,13:00,D2,27,scheduled,completed,\nBH-F00070,2026-08-31,01:50,D2,18,scheduled,completed,\nBH-F00071,2026-08-31,11:40,D1,20,scheduled,completed,\nBH-F00072,2026-08-31,14:05,D3,10,manual,completed,\nBH-F00073,2026-09-01,18:41,D1,24,scheduled,completed,\nBH-F00074,2026-09-01,20:42,D2,26,scheduled,completed,\nBH-F00075,2026-09-02,15:53,D3,12,manual,completed,\nBH-F00076,2026-09-02,21:36,D2,5,scheduled,returned_early,wind\nBH-F00077,2026-09-02,22:19,D1,26,scheduled,completed,\nBH-F00078,2026-09-03,08:47,D2,29,scheduled,completed,\nBH-F00079,2026-09-03,16:03,D1,25,scheduled,completed,\nBH-F00080,2026-09-04,00:26,D2,25,scheduled,completed,\nBH-F00081,2026-09-04,05:00,D1,25,scheduled,completed,\nBH-F00082,2026-09-05,03:14,D2,26,scheduled,completed,\nBH-F00083,2026-09-05,15:50,D1,21,scheduled,completed,\nBH-F00084,2026-09-06,00:10,D1,28,scheduled,completed,\nBH-F00085,2026-09-06,21:56,D2,18,scheduled,completed,\nBH-F00086,2026-09-07,00:31,D2,22,scheduled,completed,\nBH-F00087,2026-09-07,10:27,D3,10,manual,completed,\nBH-F00088,2026-09-07,22:53,D1,22,scheduled,completed,\nBH-F00089,2026-09-08,00:08,D1,9,scheduled,returned_early,wind\nBH-F00090,2026-09-08,01:04,D2,18,scheduled,completed,\nBH-F00091,2026-09-08,11:26,D3,11,manual,completed,\nBH-F00092,2026-09-08,14:48,D6,6,manual,completed,\nBH-F00093,2026-09-09,01:49,D2,18,scheduled,completed,\nBH-F00094,2026-09-09,08:31,D1,18,scheduled,completed,\nBH-F00095,2026-09-09,15:10,D4,6,manual,completed,\nBH-F00096,2026-09-10,08:39,D2,19,scheduled,completed,\nBH-F00097,2026-09-10,22:15,D1,20,scheduled,completed,\nBH-F00098,2026-09-11,08:28,D2,30,scheduled,completed,\nBH-F00099,2026-09-11,11:23,D1,23,scheduled,completed,\nBH-F00100,2026-09-12,02:54,D2,18,scheduled,completed,\nBH-F00101,2026-09-12,04:29,D1,21,scheduled,completed,\nBH-F00102,2026-09-13,11:49,D3,11,manual,completed,\nBH-F00103,2026-09-13,20:08,D2,30,scheduled,completed,\nBH-F00104,2026-09-13,23:45,D1,20,scheduled,completed,\nBH-F00105,2026-09-14,22:08,D1,29,scheduled,completed,\nBH-F00106,2026-09-15,06:47,D1,20,scheduled,completed,\nBH-F00107,2026-09-15,23:58,D2,25,scheduled,completed,\nBH-F00108,2026-09-16,09:29,D1,28,scheduled,completed,\nBH-F00109,2026-09-16,17:11,D2,27,scheduled,completed,\nBH-F00110,2026-09-17,00:05,D2,19,scheduled,completed,\nBH-F00111,2026-09-17,21:51,D1,22,scheduled,completed,\nBH-F00112,2026-09-18,02:58,D2,21,scheduled,completed,\nBH-F00113,2026-09-18,11:45,D1,28,scheduled,completed,\nBH-F00114,2026-09-19,11:00,D4,14,manual,completed,\nBH-F00115,2026-09-19,11:10,D1,20,scheduled,completed,\nBH-F00116,2026-09-19,23:18,D2,18,scheduled,completed,\nBH-F00117,2026-09-20,01:26,D1,23,scheduled,completed,\nBH-F00118,2026-09-20,11:42,D2,25,scheduled,completed,\nBH-F00119,2026-09-21,11:33,D2,30,scheduled,completed,\nBH-F00120,2026-09-21,16:51,D1,19,scheduled,completed,\nBH-F00121,2026-09-22,00:08,D2,30,scheduled,completed,\nBH-F00122,2026-09-22,09:51,D1,26,scheduled,completed,\nBH-F00123,2026-09-23,17:30,D2,18,scheduled,completed,\nBH-F00124,2026-09-23,18:37,D1,27,scheduled,completed,\nBH-F00125,2026-09-24,02:56,D2,25,scheduled,completed,\nBH-F00126,2026-09-24,10:14,D1,8,scheduled,returned_early,wind\nBH-F00127,2026-09-25,03:39,D1,27,scheduled,completed,\nBH-F00128,2026-09-25,09:59,D2,18,scheduled,completed,\nBH-F00129,2026-09-25,15:44,D4,7,manual,completed,\nBH-F00130,2026-09-26,10:37,D2,26,scheduled,completed,\nBH-F00131,2026-09-26,13:23,D1,24,scheduled,completed,\nBH-F00132,2026-09-27,12:18,D1,29,scheduled,completed,\nBH-F00133,2026-09-27,14:23,D2,22,scheduled,completed,\nBH-F00134,2026-09-28,06:08,D1,18,scheduled,completed,\nBH-F00135,2026-09-28,08:21,D2,22,scheduled,completed,\nBH-F00136,2026-09-28,13:23,D3,13,manual,completed,\nBH-F00137,2026-09-29,01:01,D2,23,scheduled,completed,\nBH-F00138,2026-09-29,10:45,D1,22,scheduled,completed,\nBH-F00139,2026-09-30,00:41,D2,30,scheduled,completed,\nBH-F00140,2026-09-30,20:11,D1,21,scheduled,completed,\nBH-F00141,2026-10-01,07:37,D2,29,scheduled,completed,\nBH-F00142,2026-10-01,11:33,D1,27,scheduled,completed,\nBH-F00143,2026-10-01,13:38,D4,15,manual,completed,\nBH-F00144,2026-10-02,14:13,D3,14,manual,completed,\nBH-F00145,2026-10-02,14:45,D2,22,scheduled,completed,\nBH-F00146,2026-10-02,17:47,D1,22,scheduled,completed,\nBH-F00147,2026-10-03,04:34,D2,29,scheduled,completed,\nBH-F00148,2026-10-03,19:57,D1,18,scheduled,completed,\nBH-F00149,2026-10-04,04:16,D1,20,scheduled,completed,\nBH-F00150,2026-10-04,19:59,D2,22,scheduled,completed,\nBH-F00151,2026-10-05,07:42,D2,23,scheduled,completed,\nBH-F00152,2026-10-05,12:35,D1,27,scheduled,completed,\nBH-F00153,2026-10-06,09:13,D1,26,scheduled,completed,\nBH-F00154,2026-10-06,14:09,D2,18,scheduled,completed,\nBH-F00155,2026-10-07,21:08,D1,23,scheduled,completed,\nBH-F00156,2026-10-07,22:44,D2,25,scheduled,completed,\nBH-F00157,2026-10-08,12:46,D1,30,scheduled,completed,\nBH-F00158,2026-10-08,15:30,D2,18,scheduled,completed,\nBH-F00159,2026-10-09,09:30,D2,24,scheduled,completed,\nBH-F00160,2026-10-09,15:37,D1,22,scheduled,completed,\nBH-F00161,2026-10-10,13:08,D2,23,scheduled,completed,\nBH-F00162,2026-10-10,14:20,D3,6,manual,completed,\nBH-F00163,2026-10-10,22:05,D1,30,scheduled,completed,\nBH-F00164,2026-10-11,17:19,D2,23,scheduled,completed,\nBH-F00165,2026-10-11,17:37,D1,29,scheduled,completed,\nBH-F00166,2026-10-12,03:00,D1,28,scheduled,completed,\nBH-F00167,2026-10-12,04:01,D2,24,scheduled,completed,\nBH-F00168,2026-10-13,03:13,D1,21,scheduled,completed,\nBH-F00169,2026-10-13,06:39,D2,25,scheduled,completed,\nBH-F00170,2026-10-14,02:42,D1,24,scheduled,completed,\nBH-F00171,2026-10-14,14:26,D2,21,scheduled,completed,\nBH-F00172,2026-10-15,03:57,D1,26,scheduled,completed,\nBH-F00173,2026-10-15,13:46,D2,26,scheduled,completed,\nBH-F00174,2026-10-16,01:44,D2,30,scheduled,completed,\nBH-F00175,2026-10-16,10:32,D1,18,scheduled,completed,\nBH-F00176,2026-10-17,01:31,D1,30,scheduled,completed,\nBH-F00177,2026-10-17,20:45,D2,21,scheduled,completed,\nBH-F00178,2026-10-18,05:43,D2,19,scheduled,completed,\nBH-F00179,2026-10-18,20:46,D1,19,scheduled,completed,\nBH-F00180,2026-10-19,06:48,D1,28,scheduled,completed,\nBH-F00181,2026-10-19,16:27,D2,20,scheduled,completed,\nBH-F00182,2026-10-20,07:21,D2,29,scheduled,completed,\nBH-F00183,2026-10-20,21:20,D1,9,scheduled,returned_early,wind\nBH-F00184,2026-10-21,00:15,D1,30,scheduled,completed,\nBH-F00185,2026-10-21,03:51,D2,27,scheduled,completed,\nBH-F00186,2026-10-22,14:18,D2,19,scheduled,completed,\nBH-F00187,2026-10-22,16:43,D1,20,scheduled,completed,\nBH-F00188,2026-10-23,05:19,D1,26,scheduled,completed,\nBH-F00189,2026-10-23,10:53,D2,26,scheduled,completed,\nBH-F00190,2026-10-24,00:29,D1,18,scheduled,completed,\nBH-F00191,2026-10-24,04:39,D2,19,scheduled,completed,\nBH-F00192,2026-10-24,10:44,D3,15,manual,completed,\nBH-F00193,2026-10-24,14:17,D4,10,manual,completed,\nBH-F00194,2026-10-25,13:06,D4,7,manual,completed,\nBH-F00195,2026-10-25,17:21,D2,23,scheduled,completed,\nBH-F00196,2026-10-25,18:47,D1,26,scheduled,completed,\nBH-F00197,2026-10-26,14:10,D2,29,scheduled,completed,\nBH-F00198,2026-10-26,23:33,D1,29,scheduled,completed,\nBH-F00199,2026-10-27,00:17,D2,29,scheduled,completed,\nBH-F00200,2026-10-27,03:51,D1,19,scheduled,completed,\nBH-F00201,2026-10-28,11:03,D3,13,manual,completed,\nBH-F00202,2026-10-28,18:59,D1,22,scheduled,completed,\nBH-F00203,2026-10-28,19:14,D2,28,scheduled,completed,\nBH-F00204,2026-10-29,02:31,D2,30,scheduled,completed,\nBH-F00205,2026-10-29,09:09,D4,11,manual,completed,\nBH-F00206,2026-10-29,15:58,D1,21,scheduled,completed,\nBH-F00207,2026-10-30,04:47,D2,30,scheduled,completed,\nBH-F00208,2026-10-30,20:26,D1,20,scheduled,completed,\nBH-F00209,2026-10-31,10:59,D2,23,scheduled,completed,\nBH-F00210,2026-10-31,12:32,D1,26,scheduled,completed,\nBH-F00211,2026-10-31,14:21,D3,15,manual,completed,\n"
+    },
+    {
+      "path": "invoices.json",
+      "kind": "invoices",
+      "data": {
+        "currency": "GBP",
+        "note": "From FlytBase Accounts. One invoice a year, to port operations.",
+        "invoices": [
+          {
+            "number": "INV-26-0418",
+            "issued": "2026-04-13",
+            "what": "First year, 6 docks",
+            "amount": 96000,
+            "status": "Paid",
+            "paid": "2026-05-08",
+            "note": "Billed to port operations."
+          }
+        ],
+        "first_year_total": 96000
+      }
+    },
+    {
+      "path": "mail_log.json",
+      "kind": "mail_log",
+      "data": {
+        "note": "Every email on file for the account, oldest first: written by people, and sent automatically by the platform. The threads in emails/ are listed here by path.",
+        "mail": [
+          {
+            "thread": "T001",
+            "kind": "person",
+            "date": "2026-03-03",
+            "from": "Achal Negi (FlytBase)",
+            "to": "Marcus Hale",
+            "subject": "Order form signed: next steps",
+            "body": "Marcus,\n\nThank you for the signed order form. Your contractor has our install guide. Tell us when the docks are ready to be commissioned.\n\nAchal"
+          },
+          {
+            "thread": "T003",
+            "kind": "automatic",
+            "date": "2026-03-19",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Tom Reyes (rollout contractor)",
+            "subject": "We have your request FB-10170",
+            "body": "Your request \"Install guide: mast height at a quay edge\" has been logged as FB-10170. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T004",
+            "kind": "automatic",
+            "date": "2026-03-20",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Tom Reyes (rollout contractor)",
+            "subject": "FB-10170 is closed. How did we do?",
+            "body": "Your request FB-10170 has been closed. Two questions on how it went: a short survey is linked here."
+          },
+          {
+            "thread": "T005",
+            "kind": "automatic",
+            "date": "2026-04-02",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Tom Reyes (rollout contractor)",
+            "subject": "We have your request FB-10202",
+            "body": "Your request \"Commissioning check failed on one dock\" has been logged as FB-10202. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T006",
+            "kind": "automatic",
+            "date": "2026-04-06",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Tom Reyes (rollout contractor)",
+            "subject": "FB-10202 is closed. How did we do?",
+            "body": "Your request FB-10202 has been closed. Two questions on how it went: a short survey is linked here."
+          },
+          {
+            "thread": "T007",
+            "kind": "automatic",
+            "date": "2026-04-10",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Brindle port operations",
+            "subject": "We have your request FB-10223",
+            "body": "Your request \"Operator logins\" has been logged as FB-10223. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T008",
+            "kind": "automatic",
+            "date": "2026-04-10",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Brindle port operations",
+            "subject": "FB-10223 is closed. How did we do?",
+            "body": "Your request FB-10223 has been closed. Two questions on how it went: a short survey is linked here."
+          },
+          {
+            "thread": "T015",
+            "kind": "automatic",
+            "date": "2026-04-13",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Account administrators (port operations)",
+            "subject": "Your docks are live",
+            "body": "All six docks have passed their checks and are live. Support: the support desk, in business hours."
+          },
+          {
+            "thread": "T009",
+            "kind": "automatic",
+            "date": "2026-04-14",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Elena Varga, data protection lead",
+            "subject": "We have your request FB-10231",
+            "body": "Your request \"Written request, four questions about the footage the docks record\" has been logged as FB-10231. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T012",
+            "kind": "automatic",
+            "date": "2026-05-13",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Account administrators (port operations)",
+            "subject": "Planned overnight software update",
+            "body": "Your docks will be updated overnight on 2026-05-20. A dock that is flying or offline is updated when it is next idle and online. Nothing is needed from you."
+          },
+          {
+            "thread": "T013",
+            "kind": "automatic",
+            "date": "2026-07-01",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Account administrators (port operations)",
+            "subject": "Planned overnight software update",
+            "body": "Your docks will be updated overnight on 2026-07-08. A dock that is flying or offline is updated when it is next idle and online. Nothing is needed from you."
+          },
+          {
+            "thread": "T010",
+            "kind": "automatic",
+            "date": "2026-08-03",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Brindle port operations",
+            "subject": "We have your request FB-10688",
+            "body": "Your request \"One dock would not open after a storm\" has been logged as FB-10688. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T011",
+            "kind": "automatic",
+            "date": "2026-08-04",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Brindle port operations",
+            "subject": "FB-10688 is closed. How did we do?",
+            "body": "Your request FB-10688 has been closed. Two questions on how it went: a short survey is linked here."
+          },
+          {
+            "thread": "T014",
+            "kind": "automatic",
+            "date": "2026-09-09",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Account administrators (port operations)",
+            "subject": "Planned overnight software update",
+            "body": "Your docks will be updated overnight on 2026-09-16. A dock that is flying or offline is updated when it is next idle and online. Nothing is needed from you."
+          },
+          {
+            "thread": "T002",
+            "kind": "person",
+            "date": "2026-10-23",
+            "from": "Marcus Hale",
+            "to": "Achal Negi (FlytBase)",
+            "subject": "(see file)",
+            "path": "emails/2026-10-23_marcus_expand.txt",
+            "note": "Full text in the file."
+          }
+        ]
+      }
+    },
+    {
+      "path": "profile.json",
+      "kind": "profile",
+      "data": {
+        "account": "H",
+        "name": "Brindle Harbour Authority",
+        "currency": "GBP",
+        "sector": "Port operations",
+        "what_they_bought": "6 docks and the FlytBase platform, across three quays and a container yard.",
+        "flytbase_side": {
+          "commercial_owner": "achal_negi",
+          "csm": [
+            {
+              "who": "you",
+              "from": "2026-11"
+            }
+          ],
+          "note": "No CSM was assigned between go-live and now."
+        },
+        "contacts_on_file": [
+          {
+            "id": "h_marcus_15x",
+            "name": "Marcus Hale",
+            "role": "Head of port operations",
+            "on_file_since": "2026-01",
+            "last_contact_before_handover": "2026-10-23",
+            "note": "Signed the order. The only person we have had a call with since go-live. His last email to us is dated 23 October."
+          },
+          {
+            "id": "h_tom_15x",
+            "name": "Tom Reyes",
+            "role": "Rollout contractor",
+            "on_file_since": "2026-03",
+            "last_contact_before_handover": "2026-04-13",
+            "note": "Installed and set up the docks for the authority. A contractor, not an employee."
+          },
+          {
+            "id": "h_elena_15x",
+            "name": "Elena Varga",
+            "role": "Data protection lead",
+            "on_file_since": "2026-04",
+            "last_contact_before_handover": "2026-04-14",
+            "note": "Sent one written request on 14 April 2026. No reply on file."
+          }
+        ],
+        "not_on_file": [
+          "Anyone in the authority's finance team.",
+          "Anyone in the authority's IT team.",
+          "Which dock sits at which quay or in the yard."
+        ],
+        "renewal": {
+          "term_ends": "2027-04-12",
+          "annual_value": 96000
+        }
+      }
+    },
+    {
+      "path": "requests.csv",
+      "kind": "requests",
+      "text": "request_id,opened,from,summary,status,owner,last_update,how_it_arrived\nFB-10231,2026-04-14,\"Elena Varga, data protection lead\",\"Written request with four questions about the footage the docks record. No reply sent.\",Open,,2026-04-14,Support ticket\nFB-10688,2026-08-03,Brindle port operations,\"One dock would not open after a storm. Reset remotely.\",Closed,Support desk,2026-08-04,Support ticket\n"
+    },
+    {
+      "path": "tickets.json",
+      "kind": "tickets",
+      "data": {
+        "note": "Every support ticket on the account, oldest first. Ticket numbers run across all FlytBase customers. requests.csv is customer success's own list of what it was tracking at the handover, which also holds requests that never became tickets.",
+        "tickets": [
+          {
+            "id": "FB-10170",
+            "opened": "2026-03-19",
+            "requester": "Tom Reyes (rollout contractor)",
+            "subject": "Install guide: mast height at a quay edge",
+            "category": "how to",
+            "status": "Closed",
+            "closed": "2026-03-20",
+            "assignee": "Support desk",
+            "first_response_hours": 2,
+            "conversation": [
+              {
+                "date": "2026-03-19",
+                "from": "Tom Reyes (rollout contractor)",
+                "text": "Install guide: mast height at a quay edge."
+              },
+              {
+                "date": "2026-03-20",
+                "from": "Support desk",
+                "text": "Sent the section of the install guide on exposed sites."
+              }
+            ]
+          },
+          {
+            "id": "FB-10202",
+            "opened": "2026-04-02",
+            "requester": "Tom Reyes (rollout contractor)",
+            "subject": "Commissioning check failed on one dock",
+            "category": "hardware",
+            "status": "Closed",
+            "closed": "2026-04-06",
+            "assignee": "Support desk",
+            "first_response_hours": 15,
+            "conversation": [
+              {
+                "date": "2026-04-02",
+                "from": "Tom Reyes (rollout contractor)",
+                "text": "Commissioning check failed on one dock."
+              },
+              {
+                "date": "2026-04-06",
+                "from": "Support desk",
+                "text": "Passed after the antenna was re-seated."
+              }
+            ]
+          },
+          {
+            "id": "FB-10223",
+            "opened": "2026-04-10",
+            "requester": "Brindle port operations",
+            "subject": "Operator logins",
+            "category": "accounts",
+            "status": "Closed",
+            "closed": "2026-04-10",
+            "assignee": "Support desk",
+            "first_response_hours": 1,
+            "conversation": [
+              {
+                "date": "2026-04-10",
+                "from": "Brindle port operations",
+                "text": "Operator logins."
+              },
+              {
+                "date": "2026-04-10",
+                "from": "Support desk",
+                "text": "Created from the list supplied."
+              }
+            ]
+          },
+          {
+            "id": "FB-10231",
+            "opened": "2026-04-14",
+            "requester": "Elena Varga, data protection lead",
+            "subject": "Written request, four questions about the footage the docks record",
+            "category": "request",
+            "status": "Open",
+            "closed": null,
+            "assignee": null,
+            "first_response_hours": null,
+            "conversation": [
+              {
+                "date": "2026-04-14",
+                "from": "Elena Varga",
+                "text": "(The text of the request sits with the support desk and was not copied to the customer success record.)"
+              }
+            ]
+          },
+          {
+            "id": "FB-10688",
+            "opened": "2026-08-03",
+            "requester": "Brindle port operations",
+            "subject": "One dock would not open after a storm",
+            "category": "hardware",
+            "status": "Closed",
+            "closed": "2026-08-04",
+            "assignee": "Support desk",
+            "first_response_hours": 9,
+            "conversation": [
+              {
+                "date": "2026-08-03",
+                "from": "Brindle port operations",
+                "text": "One dock will not open after last night's storm."
+              },
+              {
+                "date": "2026-08-04",
+                "from": "Support desk",
+                "text": "Reset remotely. Lid cycle normal."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "usage_weekly.csv",
+      "kind": "usage",
+      "text": "week_start,dock_id,flights,days_online\n2026-07-27,D1,2,7\n2026-08-03,D1,7,7\n2026-08-10,D1,7,7\n2026-08-17,D1,7,7\n2026-08-24,D1,7,7\n2026-08-31,D1,7,7\n2026-09-07,D1,7,7\n2026-09-14,D1,7,7\n2026-09-21,D1,7,7\n2026-09-28,D1,7,7\n2026-10-05,D1,7,7\n2026-10-12,D1,7,7\n2026-10-19,D1,7,7\n2026-10-26,D1,6,7\n2026-07-27,D2,2,7\n2026-08-03,D2,7,7\n2026-08-10,D2,7,7\n2026-08-17,D2,7,7\n2026-08-24,D2,7,7\n2026-08-31,D2,7,7\n2026-09-07,D2,7,7\n2026-09-14,D2,6,7\n2026-09-21,D2,7,7\n2026-09-28,D2,7,7\n2026-10-05,D2,7,7\n2026-10-12,D2,7,7\n2026-10-19,D2,7,7\n2026-10-26,D2,6,7\n2026-07-27,D3,1,7\n2026-08-03,D3,0,7\n2026-08-10,D3,1,7\n2026-08-17,D3,1,7\n2026-08-24,D3,0,7\n2026-08-31,D3,2,7\n2026-09-07,D3,3,7\n2026-09-14,D3,0,7\n2026-09-21,D3,0,7\n2026-09-28,D3,2,7\n2026-10-05,D3,1,7\n2026-10-12,D3,0,7\n2026-10-19,D3,1,7\n2026-10-26,D3,2,7\n2026-07-27,D4,1,7\n2026-08-03,D4,1,7\n2026-08-10,D4,1,7\n2026-08-17,D4,0,7\n2026-08-24,D4,1,7\n2026-08-31,D4,0,7\n2026-09-07,D4,1,7\n2026-09-14,D4,1,7\n2026-09-21,D4,1,7\n2026-09-28,D4,1,7\n2026-10-05,D4,0,7\n2026-10-12,D4,0,7\n2026-10-19,D4,2,7\n2026-10-26,D4,1,7\n2026-07-27,D5,0,7\n2026-08-03,D5,1,7\n2026-08-10,D5,0,7\n2026-08-17,D5,0,7\n2026-08-24,D5,1,7\n2026-08-31,D5,0,7\n2026-09-07,D5,0,7\n2026-09-14,D5,0,7\n2026-09-21,D5,0,7\n2026-09-28,D5,0,7\n2026-10-05,D5,0,7\n2026-10-12,D5,0,7\n2026-10-19,D5,0,7\n2026-10-26,D5,0,7\n2026-07-27,D6,0,7\n2026-08-03,D6,0,7\n2026-08-10,D6,0,7\n2026-08-17,D6,0,7\n2026-08-24,D6,0,7\n2026-08-31,D6,0,7\n2026-09-07,D6,1,7\n2026-09-14,D6,0,7\n2026-09-21,D6,0,7\n2026-09-28,D6,0,7\n2026-10-05,D6,0,7\n2026-10-12,D6,0,7\n2026-10-19,D6,0,7\n2026-10-26,D6,0,7\n"
+    }
+  ]
+}

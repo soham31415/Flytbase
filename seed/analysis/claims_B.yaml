@@ -1,0 +1,199 @@
+# Claims for account B (Aldermoor Industrial Group). Drafted by Claude, for your review.
+# Same format as claims_A.yaml (see its header).
+
+account: B
+claims:
+  - n: 1
+    said_by: official_story
+    type: budget
+    subject: [B/b_sister, B/b_renewal]
+    source_ids: [B/B]
+    quote: "ROI proven."
+    premise_of: [B/b_sister]
+    evidence_against: [B/allocation_guard_summary, B/insurer_premium_letter, B/nr_cost_2, B/sr_case_3]
+    note: "The only measured saving is the insurer's ~180,000 a year; no guard contract changed at any plant."
+
+  - n: 2
+    said_by: official_story
+    type: usage
+    subject: []
+    quantity: 14
+    source_ids: [B/B]
+    quote: "15 plants, 14 docks installed"
+    test:
+      - {metric: docks.contracted, op: "==", value: 14}
+      - {metric: docks.registered, op: "==", value: 14}
+
+  - n: 3
+    said_by: official_story
+    type: usage
+    subject: []
+    quantity: 13
+    source_ids: [B/B]
+    quote: "13 flying."
+    test:
+      - {metric: docks.flew_30d, op: ">=", value: 13}
+      - {metric: docks.regular_patrol, op: ">=", value: 13}
+      - {metric: docks.stopped_flying, op: "==", value: 0}
+    note: "13 docks flew at least once in the last 4 weeks, but few patrol regularly, and three regular docks just stopped."
+
+  - n: 4
+    said_by: official_story
+    type: timeline
+    subject: [B/b_sister]
+    source_ids: [B/B]
+    quote: "Case study for 40-plant sister company in preparation."
+    evidence_against: [B/requests.csv, B/deal_history.json]
+    note: "The case study has not been started (requests.csv, deal_history.json)."
+
+  - n: 5
+    said_by: B/stefan_roy
+    type: timeline
+    subject: [B/b_renewal]
+    date: "2026-10-13"
+    source_ids: [B/calls/2026-10-13_check_in.txt]
+    quote: "Ignore it. The renewal is a formality."
+    evidence_against: [B/emails/2026-10-08_finance_mailbox.txt, B/contract.txt, B/nr_cost_2]
+    ask:
+      question: "Does group finance need a per-plant quote before it approves the renewal?"
+      who: B/nadia_rahman
+
+  - n: 6
+    said_by: B/stefan_roy
+    type: authority
+    subject: [B/b_renewal, B/b_sister]
+    date: "2026-10-13"
+    source_ids: [B/calls/2026-10-13_check_in.txt]
+    quote: "You do not need finance. This is a security programme."
+    evidence_against: [B/nr_cost_2, B/emails/2026-10-08_finance_mailbox.txt, B/nr_evidence_2]
+
+  - n: 7
+    said_by: B/stefan_roy
+    type: authority
+    subject: []
+    date: "2026-08-25"
+    source_ids: [B/calls/2026-08-25_check_in.txt]
+    quote: "The plants handle that."
+    evidence_against: [B/ba_use_2, B/FB-10944]
+    note: "Alerts go to the Plant 7 manager's phone; the guard contractor doesn't act on them."
+
+  - n: 8
+    said_by: B/stefan_roy
+    type: usage
+    subject: []
+    date: "2026-05-21"
+    source_ids: [B/calls/2026-05-21_intro_call.txt]
+    quote: "The plants set their own pace. They are all covered."
+    test:
+      - {metric: docks.never_flown, op: "==", value: 0}
+      - {metric: docks.regular_patrol, op: ">=", value: 14}
+
+  - n: 9
+    said_by: B/stefan_roy
+    type: authority
+    subject: []
+    date: "2026-07-14"
+    source_ids: [B/calls/2026-07-14_check_in.txt]
+    quote: "Go through me for now."
+    test:
+      - {metric: users.named_activity, field: B/U01.sign_ins_last_90_days, op: ">", value: 0}
+    note: "Stefan's own login has no sign-ins in 90 days; the deputy (B/U02) runs the platform."
+
+  - n: 10
+    said_by: finance_mailbox
+    type: timeline
+    subject: [B/b_renewal]
+    date: "2026-10-08"
+    source_ids: [B/emails/2026-10-08_finance_mailbox.txt]
+    quote: "We understand the dock contract renews at the end of January."
+    test:
+      - {metric: contract.term, field: end, op: "==", value: "2027-01-31"}
+    possible_causes:
+      - text: "The finance mailbox email came from Nadia Rahman's team."
+        ids: [B/emails/2026-10-08_finance_mailbox.txt, B/nadia_rahman, B/nr_cost_2]
+
+  - n: 11
+    said_by: B/stefan_roy
+    type: timeline
+    subject: []
+    date: "2026-10-13"
+    source_ids: [B/calls/2026-10-13_check_in.txt]
+    quote: "That is an IT matter on our side. It will be sorted."
+    evidence_against: [B/FB-10903]
+    possible_causes:
+      - text: "AD-01 is the Plant 11 dock: five offline episodes from 2026-09-08 to 2026-10-06, matching the offline alerts."
+        ids: [B/AD-01, B/device_events.csv, B/mail_log.json, B/FB-10903]
+    ask:
+      question: "Who in group IT owns the Plant 11 link (FB-10903, pending since 2026-09-10)?"
+      who: B/owen_fitch
+
+fact_overrides:
+  sr_roi_0:
+    type: budget
+    subject: [B/b_sister, B/b_renewal]
+    premise_of: [B/b_sister]   # b_sister's worth (1,200,000) is this claimed saving
+    evidence_against: [B/allocation_guard_summary, B/insurer_premium_letter, B/nr_cost_2, B/sr_case_3]
+    ask:
+      question: "Can we see the spreadsheet behind the 1.2 million, and can finance check it?"
+      who: B/nadia_rahman
+  sr_roll_0:
+    type: usage
+    quantity: 13
+    test:
+      - {metric: docks.flew_30d, op: ">=", value: 13}
+      - {metric: docks.regular_patrol, op: ">=", value: 13}
+  ba_use_2:
+    type: usage
+    subject: [plant:7]
+    ask:
+      question: "Which dock is at Plant 7, and who should act on night alerts?"
+      who: B/beatriz_alonso
+  ba_other_1:
+    type: usage
+    subject: [plant:11]
+    possible_causes:
+      - text: "The Plant 11 dock is AD-14, the only dock that has never flown."
+        ids: [B/AD-14, B/usage_weekly.csv]
+      - text: "The Plant 11 dock is AD-01, which keeps dropping offline (FB-10903)."
+        ids: [B/AD-01, B/FB-10903, B/device_events.csv]
+    ask:
+      question: "Which dock is at Plant 11? The install list sits with the deputy."
+      who: B/stefan_roy
+  of_weak_1:
+    type: problem
+    subject: [plant:11, plant:12, plant:13, plant:14]
+    possible_causes:
+      - text: "AD-01, AD-07, AD-12 and AD-14 are the Plants 11-14 docks: they have far more connection drops than any other dock."
+        ids: [B/AD-01, B/AD-07, B/AD-12, B/AD-14, B/device_events.csv]
+    ask:
+      question: "Which docks are at Plants 11-14, and what is the network project that will cut them off?"
+      who: B/owen_fitch
+  nr_cost_2:
+    type: budget
+    subject: [B/b_renewal]
+    evidence_for: [B/allocation_guard_summary]
+  jt_prem_2:
+    type: budget
+    subject: [B/b_insurance, B/b_renewal]
+  jt_review_2:
+    type: timeline
+    subject: [B/b_insurance]
+    ask:
+      question: "When exactly is the insurer's review, and which plants' logs will it ask for?"
+      who: B/julian_tate
+  sr_repl_2:
+    type: timeline
+    subject: [B/b_idle]
+    ask:
+      question: "When does the deputy leave, and can he walk us through the install list before then?"
+      who: B/stefan_roy
+  sr_case_3:
+    type: budget
+    subject: [B/b_sister]
+    evidence_for: [B/emails/2026-07-16_stefan_savings.txt]
+  nr_sister_1:
+    type: budget
+    subject: [B/b_sister]
+    ask:
+      question: "Who at the sister company holds the budget for a 40-plant purchase?"
+      who: B/stefan_roy

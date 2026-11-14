@@ -1,0 +1,240 @@
+{
+  "account": "K",
+  "records": [
+    {
+      "path": "contract.txt",
+      "kind": "contract",
+      "text": "ORDER SUMMARY (customer success copy)\nCustomer: Kestrel Estates, ordered through a local installer acting as reseller\nOrder placed: August 2026\nCurrency: pounds sterling\n\nWhat was ordered\n- 1 dock with aircraft, and the FlytBase platform.\n- Installation by the installer. Not by FlytBase.\n\nPrice and term\n- 14,000 a year for the platform subscription, paid in full through the installer.\n- Term: 14 September 2026 to 13 September 2027.\n- No automatic renewal.\n\nNot included\n- Operator training or certification. The reseller order form leaves these to the reseller.\n- Onboarding by FlytBase customer success.\n- Any site survey beyond the installed position.\n\nSupport\n- Standard support: support desk in business hours.\n"
+    },
+    {
+      "path": "deal_history.json",
+      "kind": "deal_history",
+      "data": {
+        "account": "K",
+        "currency": "GBP",
+        "history": [
+          {
+            "date": "2026-08",
+            "what": "Order through a reseller",
+            "detail": "A local installer ordered 1 dock and a one-year platform subscription for Kestrel Estates. The installer's order notes describe the purpose as mapping the whole estate."
+          },
+          {
+            "date": "2026-09-14",
+            "what": "Installed",
+            "detail": "Dock installed by the installer. See the install note in the account's files."
+          },
+          {
+            "date": "2026-09-14",
+            "what": "Term starts",
+            "detail": "14,000 a year, paid in full through the installer.",
+            "value": 14000
+          },
+          {
+            "date": "2026-10-19",
+            "what": "First contact from the customer",
+            "detail": "Dana Whitfield emails to ask when the dock starts flying. Automatic acknowledgement only."
+          },
+          {
+            "date": "2026-11",
+            "what": "Assigned to customer success",
+            "detail": "No onboarding call was ever held. The account passes to you."
+          }
+        ],
+        "on_file_as_open_at_handover": [
+          {
+            "what": "Go-live of the one dock",
+            "value": null,
+            "basis": "Paid for and not flying. Nothing on file says why."
+          }
+        ],
+        "note": "What the estate needs, and what any next step is worth, is in the account brief and in what you find out."
+      }
+    },
+    {
+      "path": "device_events.csv",
+      "kind": "device_events",
+      "text": "date,time,dock_id,event,detail\n2026-09-14,15:05,KE-D01,registered,Registered by the reseller\n2026-09-16,03:37,KE-D01,software_update,\n"
+    },
+    {
+      "path": "devices.json",
+      "kind": "devices",
+      "data": {
+        "note": "The dock registered to this account. `commissioned` is empty: no commissioning flight is on record.",
+        "docks": [
+          {
+            "dock_id": "KE-D01",
+            "dock_serial": "FBD40W45166",
+            "aircraft_serial": "FBA97B85639",
+            "model": "Standard dock, 2025 model",
+            "registered": "2026-09-14",
+            "commissioned": null,
+            "software": "2026.09",
+            "last_seen_online": "2026-11-13"
+          }
+        ]
+      }
+    },
+    {
+      "path": "emails/2026-10-19_dana_when.txt",
+      "kind": "email",
+      "text": "From: Dana Whitfield, Kestrel Estates\nTo: FlytBase (general address)\nDate: 19 October 2026\nSubject: Our dock\n\nHello,\n\nWe had a dock installed on the gatehouse roof five weeks ago. It has been paid for. It has not\nflown. The firm that installed it has stopped answering.\n\nWho do I speak to, and when does it start?\n\nDana Whitfield\nEstate manager\n\n---\nFrom: FlytBase (automatic reply)\nDate: 19 October 2026\n\nThank you for your message. A member of the team will be in touch.\n\n[No further reply on file.]\n"
+    },
+    {
+      "path": "invoices.json",
+      "kind": "invoices",
+      "data": {
+        "currency": "GBP",
+        "note": "From FlytBase Accounts. Sold through a reseller: the reseller was invoiced, not the customer.",
+        "invoices": [
+          {
+            "number": "INV-26-0921",
+            "issued": "2026-09-14",
+            "what": "First year, 1 dock, platform subscription",
+            "amount": 14000,
+            "status": "Paid",
+            "paid": "2026-09-14",
+            "note": "Paid in full by the reseller."
+          }
+        ],
+        "first_year_total": 14000
+      }
+    },
+    {
+      "path": "mail_log.json",
+      "kind": "mail_log",
+      "data": {
+        "note": "Every email on file for the account, oldest first: written by people, and sent automatically by the platform. The threads in emails/ are listed here by path.",
+        "mail": [
+          {
+            "thread": "T002",
+            "kind": "automatic",
+            "date": "2026-09-14",
+            "from": "FlytBase notifications (automatic)",
+            "to": "The reseller (a local installer)",
+            "subject": "We have your request FB-10923",
+            "body": "Your request \"Dock registered\" has been logged as FB-10923. The support desk answers tickets in order of arrival, in business hours."
+          },
+          {
+            "thread": "T003",
+            "kind": "automatic",
+            "date": "2026-09-14",
+            "from": "FlytBase notifications (automatic)",
+            "to": "The reseller (a local installer)",
+            "subject": "FB-10923 is closed. How did we do?",
+            "body": "Your request FB-10923 has been closed. Two questions on how it went: a short survey is linked here."
+          },
+          {
+            "thread": "T004",
+            "kind": "automatic",
+            "date": "2026-09-14",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Account administrator (reseller's login)",
+            "subject": "Your dock is registered",
+            "body": "Dock KE-D01 is registered to Kestrel Estates. It will appear as ready once it has passed its checks and flown a commissioning flight."
+          },
+          {
+            "thread": "T001",
+            "kind": "person",
+            "date": "2026-10-19",
+            "from": "Dana Whitfield",
+            "to": "FlytBase general address",
+            "subject": "(see file)",
+            "path": "emails/2026-10-19_dana_when.txt",
+            "note": "Full text in the file."
+          },
+          {
+            "thread": "T005",
+            "kind": "automatic",
+            "date": "2026-10-19",
+            "from": "FlytBase notifications (automatic)",
+            "to": "Dana Whitfield",
+            "subject": "We have your message",
+            "body": "Thank you for writing to FlytBase. Your message has been received."
+          }
+        ]
+      }
+    },
+    {
+      "path": "profile.json",
+      "kind": "profile",
+      "data": {
+        "account": "K",
+        "name": "Kestrel Estates",
+        "currency": "GBP",
+        "sector": "Private residential estate",
+        "what_they_bought": "1 dock and the FlytBase platform, bought through a local installer.",
+        "flytbase_side": {
+          "commercial_owner": null,
+          "csm": [
+            {
+              "who": "you",
+              "from": "2026-11"
+            }
+          ],
+          "note": "Sold through a reseller. No FlytBase colleague has spoken to this customer."
+        },
+        "contacts_on_file": [
+          {
+            "id": "k_dana_15x",
+            "name": "Dana Whitfield",
+            "role": "Estate manager",
+            "on_file_since": "2026-09",
+            "last_contact_before_handover": "2026-10-19",
+            "note": "Named on the installer's order. Her one email to us got an automatic acknowledgement only."
+          }
+        ],
+        "not_on_file": [
+          "Anyone else at the estate.",
+          "A working contact for the installer. Their phone and email no longer answer.",
+          "A record of any flight."
+        ],
+        "renewal": {
+          "term_ends": "2027-09-13",
+          "annual_value": 14000
+        }
+      }
+    },
+    {
+      "path": "requests.csv",
+      "kind": "requests",
+      "text": "request_id,opened,from,summary,status,owner,last_update,how_it_arrived\n(none),2026-10-19,\"Dana Whitfield, estate manager\",\"Asked when the dock will start flying. Automatic acknowledgement sent. No reply from a person.\",Open,,2026-10-19,Email to the general address\n"
+    },
+    {
+      "path": "tickets.json",
+      "kind": "tickets",
+      "data": {
+        "note": "Every support ticket on the account, oldest first. Ticket numbers run across all FlytBase customers. requests.csv is customer success's own list of what it was tracking at the handover, which also holds requests that never became tickets.",
+        "tickets": [
+          {
+            "id": "FB-10923",
+            "opened": "2026-09-14",
+            "requester": "The reseller (a local installer)",
+            "subject": "Dock registered",
+            "category": "accounts",
+            "status": "Closed",
+            "closed": "2026-09-14",
+            "assignee": "Support desk",
+            "first_response_hours": 2,
+            "conversation": [
+              {
+                "date": "2026-09-14",
+                "from": "The reseller (a local installer)",
+                "text": "Dock registered."
+              },
+              {
+                "date": "2026-09-14",
+                "from": "Support desk",
+                "text": "Registered to Kestrel Estates on the reseller's order."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "usage_weekly.csv",
+      "kind": "usage",
+      "text": "week_start,dock_id,flights,days_online\n2026-09-14,KE-D01,0,7\n2026-09-21,KE-D01,0,7\n2026-09-28,KE-D01,0,7\n2026-10-05,KE-D01,0,7\n2026-10-12,KE-D01,0,7\n2026-10-19,KE-D01,0,7\n2026-10-26,KE-D01,0,7\n"
+    }
+  ]
+}
