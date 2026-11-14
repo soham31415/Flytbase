@@ -19,6 +19,7 @@ load_dotenv(ROOT / ".env")  # real env vars take precedence
 class Settings:
     live_mode: bool
     data_dir: Path
+    snapshot_dir: Path  # local snapshots loaded at startup (default $DATA_DIR/raw)
     as_of: str | None
     aq_token: str = field(repr=False)  # repr=False keeps it out of logs and tracebacks
 
@@ -29,9 +30,11 @@ def _bool(value):
 
 def get_settings():
     """Read settings now (not at import), so tests can change env vars."""
+    data_dir = Path(os.environ.get("DATA_DIR", "./data"))
     return Settings(
         live_mode=_bool(os.environ.get("LIVE_MODE", "false")),
-        data_dir=Path(os.environ.get("DATA_DIR", "./data")),
+        data_dir=data_dir,
+        snapshot_dir=Path(os.environ.get("SNAPSHOT_DIR") or data_dir / "raw"),
         as_of=os.environ.get("AS_OF") or None,
         aq_token=os.environ.get("AQ_TOKEN", ""),
     )

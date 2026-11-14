@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from app.ids import build as build_ids, deadline_key  # noqa: E402
-from app.world import assemble, csv_rows, looks_like_csv  # noqa: E402
+from app.world import assemble, csv_rows, is_csv  # noqa: E402
 from common import DUMP_DIR, RAW_DIR, load_json  # noqa: E402
 
 LONG_TEXT = 160  # cells longer than this switch a table to one block per record
@@ -239,7 +239,7 @@ def render_file_content(content):
         out = render_fields({k: v for k, v in content.items() if simple_value(v) and k not in ("text", "content")}, 4)
         body = content.get("text") or content.get("content")
         if isinstance(body, str):
-            out += (csv_summary(body) if looks_like_csv(body) else []) + code(body)
+            out += (csv_summary(body) if is_csv(content.get("name"), body) else []) + code(body)
         for k, v in content.items():
             if not simple_value(v):
                 out += heading(4, k) + render_any(v, 5)
@@ -276,7 +276,7 @@ def csv_summary(text):
 def render_record_body(r):
     out = []
     if isinstance(r.get("text"), str):
-        if looks_like_csv(r["text"]):
+        if is_csv(r.get("path"), r["text"]):
             out += csv_summary(r["text"])
         out += code(r["text"])
     if "data" in r:
@@ -435,7 +435,7 @@ def render_index(raw, accounts, files, paperwork, signals, file_contents, idx, e
         for kind, n in sorted(Counter(r["kind"] for r in pw.get("records", [])).items()):
             rows.append({"account": A, "entity": f"paperwork:{kind}", "count": n})
         for r in pw.get("records", []):
-            if isinstance(r.get("text"), str) and looks_like_csv(r["text"]):
+            if is_csv(r.get("path"), r.get("text")):
                 rows.append({"account": A, "entity": f"rows in {r['path']}", "count": len(csv_rows(r["text"]))})
     for src, key in [("get_flytbase_team", "people"), ("get_feature_requests", "requests"), ("get_release_notes", "releases"), ("list_notes", "notes")]:
         rows.append({"account": "-", "entity": f"{src}.{key}", "count": len((raw.get(src) or {}).get(key, []))})
@@ -472,7 +472,7 @@ def render_index(raw, accounts, files, paperwork, signals, file_contents, idx, e
         pw = paperwork.get(A, (None, {}))[1] or {}
         registered = {e["id"] for e in idx.entries.values() if e["scope"] == A and e["kind"] == "dock"}
         for r in pw.get("records", []):
-            if isinstance(r.get("text"), str) and looks_like_csv(r["text"]):
+            if is_csv(r.get("path"), r.get("text")):
                 named = {row["dock_id"] for row in csv_rows(r["text"]) if row.get("dock_id")}
                 for d in sorted(named - registered):
                     problems.append(f"{A}/{r['path']} names dock `{d}` not in devices.json")

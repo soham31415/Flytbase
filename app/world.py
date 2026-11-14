@@ -17,9 +17,9 @@ def csv_rows(text):
     return list(csv.DictReader(io.StringIO(text)))
 
 
-def looks_like_csv(text):
-    first = text.split("\n", 1)[0]
-    return "," in first and "\n" in text and len(first) < 300
+def is_csv(name, text):
+    """A CSV is a text whose file name ends in .csv. Content alone can't tell: transcripts have commas too."""
+    return isinstance(text, str) and str(name or "").lower().endswith(".csv")
 
 
 def drop_id(entry):
@@ -112,7 +112,7 @@ def merge_signal(paperwork, signal):
         path = path[len(acct) + 1:] if path.startswith(f"{acct}/") else path
         existing = next((r for r in records if r.get("path") == path), None)
         text = rec.get("text")
-        if existing and isinstance(text, str) and isinstance(existing.get("text"), str) and looks_like_csv(text) and looks_like_csv(existing["text"]):
+        if existing and is_csv(path, text) and is_csv(existing["path"], existing.get("text")):
             merge_csv_rows(existing, text, source)
         elif existing is None:
             records.append({**rec, "path": path, "source": source})
@@ -177,7 +177,7 @@ def _activity_dates(record):
 
     if data is not None:
         visit(data)
-    if isinstance(record.get("text"), str) and looks_like_csv(record["text"]):
+    if is_csv(record.get("path"), record.get("text")):
         for row in csv_rows(record["text"]):
             for k in ("date", "week_start", "opened", "last_update"):
                 if row.get(k) and DATE_RE.fullmatch(row[k][:10]):
