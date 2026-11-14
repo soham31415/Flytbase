@@ -281,6 +281,10 @@ class Store:
             }
         return out
 
+    def set_meta(self, k, v):
+        with self.lock, self.conn:
+            self.conn.execute("INSERT OR REPLACE INTO meta VALUES (?, ?)", (k, v))
+
     def query(self, sql, params=()):
         with self.lock:
             return [dict(r) for r in self.conn.execute(sql, params).fetchall()]

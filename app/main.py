@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from app import crm
 from app.config import ROOT, get_settings
 from app.engine.run import full_state, load_rules, resolve_metric
+from app.scheduler import Scheduler
 from app.store import Store
 
 
@@ -27,7 +28,13 @@ async def lifespan(app):
     app.state.store = store
     app.state.snapshots_added = store.import_snapshots(settings.snapshot_dir)
     refresh_state(app, store, settings)
+    app.state.scheduler = None
+    if settings.live_mode and settings.aq_token:
+        app.state.scheduler = Scheduler(app, store, settings, lambda: refresh_state(app, store, settings))
+        app.state.scheduler.start()
     yield
+    if app.state.scheduler:
+        await app.state.scheduler.stop()
 
 
 app = FastAPI(title="Questathon CRM", lifespan=lifespan)
@@ -67,7 +74,18 @@ def health(request: Request):
         "accounts": meta["accounts"],
         "unresolved": meta["unresolved"],
         "counts": st.counts(),
+        "scheduler": request.app.state.scheduler.status() if request.app.state.scheduler else None,
     }
+
+
+@app.post("/api/sync")
+def sync_now(request: Request):
+    """Live mode: ask the scheduler to re-check signals, whoami and the accounts at its next free slot."""
+    sched = request.app.state.scheduler
+    if sched is None:
+        raise HTTPException(status_code=409, detail="not live: use /api/reload to re-read the snapshots")
+    sched.sync_now()
+    return {"ok": True, "next_call_at": sched.status()["next_call_at"]}
 
 
 @app.get("/api/record/{key:path}")

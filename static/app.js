@@ -8,6 +8,7 @@ const OWNERS = { me: "You", "team/achal_negi": "Achal Negi", "team/pranjal_suyal
   "team/neel_sharma": "Neel Sharma", "team/srv": "SRV", "team/yashash_rao": "Yashash Rao", "team/sam": "Sam" };
 const cache = {};
 let rebuiltAt = null;
+let liveMode = false;
 let today = null;
 
 // ---------- helpers ----------
@@ -76,7 +77,7 @@ async function render() {
     today = home.as_of;
     $("#asof").textContent = `Today ${fmtDate(home.as_of)}`;
     $("#sync").textContent = `Synced ${ago(home.last_sync)}`;
-    $("#sync-btn").disabled = home.live_mode;
+    liveMode = home.live_mode;
     const view = { home: homePage, accounts: r.id ? accountPage : accountsPage, deals: dealsPage, contacts: contactsPage, activities: activitiesPage, insights: insightsPage }[r.page] || homePage;
     main.innerHTML = await view(r, home);
     bindPage(r);
@@ -409,6 +410,11 @@ async function openMore(r, what) {
 // ---------- sync + live polling ----------
 $("#sync-btn").addEventListener("click", async () => {
   try {
+    if (liveMode) {
+      const r = await api("/api/sync", { method: "POST" });
+      toast(`Checking for new data at ${new Date(r.next_call_at).toLocaleTimeString()}`);
+      return;
+    }
     const r = await api("/api/reload", { method: "POST" });
     toast(r.snapshots_added ? `Loaded ${plural(r.snapshots_added, "update")}` : "Already up to date");
     for (const k in cache) delete cache[k];

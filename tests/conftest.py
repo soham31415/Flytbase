@@ -18,6 +18,7 @@ def make_client(monkeypatch, tmp_path, snapshot_dir, live_mode="false"):
     monkeypatch.setenv("DATA_DIR", str(tmp_path))
     monkeypatch.setenv("SNAPSHOT_DIR", str(snapshot_dir))
     monkeypatch.setenv("LIVE_MODE", live_mode)
+    monkeypatch.setenv("AQ_TOKEN", "")  # tests never reach the real MCP: no token, no scheduler
     monkeypatch.delenv("AS_OF", raising=False)
     from app.main import app
 
